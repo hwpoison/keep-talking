@@ -32,11 +32,11 @@
             :key="id"
           >
             <div
-              class="place-self-start text-left cursor-default select-none"
+              class="place-self-start text-left cursor-default"
               :class="message.from == 'own' ? 'place-self-end pl-20 ' : 'pr-20'"
             >
               <div
-                class="bg-white p-3 break-all rounded-r-lg rounded-1 shadow"
+                class="bg-white p-3 word-break rounded-r-lg rounded-1 shadow"
                 :class="{ 'rounded-l-lg bg-green-100': message.from == 'own' }"
               >
                 {{ message.message }}
@@ -168,7 +168,7 @@ export default {
 
       // craft init conversation context with contact info
       chatTokenHistory.value =
-        "personality:" + info.context + '\n' + contactInfo.personality + "\n"
+        contactInfo.name + ":" + contactInfo.personality + "\n" + info.context + '\n' 
     }
 
     const loadOrInitChat = (contactId) => {

@@ -7,8 +7,8 @@ class openaiAPI {
   constructor() {
     this.apiKey = OPENAI_API_KEY
     this.configuration = {
-      temperature: 0.8,
-      engine: "ada",
+      temperature: 0.9,
+      engine: "ada"
     }
     this._openai = new OpenAI(this.apiKey)
   }
@@ -29,15 +29,17 @@ class openaiAPI {
 
     if (selectedEngine != "davinci-instruct-beta-v3") stopwords.push("\n")
 
-    console.log("=>Input:", prompt, "\n\n=>Engine:", selectedEngine)
+    console.log("=>Input:", prompt, 
+      "\n\n=>Engine:", selectedEngine,
+      "\n\n=>Temperature:", selectedTemperature)
       const gptResponse = await this._openai.complete({
           engine: selectedEngine,
           prompt: prompt,
           maxTokens: 150,
-          temperature: selectedTemperature,
+          temperature: selectedTemperature, // a number between 0 and 1 that determines how many creative risks the engine takes when generating text.
           topP: 1,
-          presencePenalty: 0.7,
-          frequencyPenalty: 0,
+          presencePenalty: 0.6, // a number between 0 and 1. The higher this value the model will make a bigger effort in talking about new topics.
+          frequencyPenalty: 0.0, // a number between 0 and 1. The higher this value the model will make a bigger effort in not repeating itself.
           bestOf: 1,
           n: 1,
           stream: false,
