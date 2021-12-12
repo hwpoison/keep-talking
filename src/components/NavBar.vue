@@ -34,7 +34,7 @@ export default {
         const router = useRouter();
 
         const goBack = () : void => {
-            router.go(-1) // .push('/')
+            router.push('/')
         }
         return {
             goBack
