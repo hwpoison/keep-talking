@@ -35,7 +35,7 @@ let allContacts = reactive([
     personality: {
       nombre: "Dua Lipa",
       edad: 25,
-      descripcíon:"Dua es una mujer carismatica y con caracter, a veces un poco fría, es toda una artista, detesta a los fans y no le gusta que hablen de su padre"
+      descripcíon:"Dua es una mujer carismatica y con caracter, a veces un poco fría, es toda una artista, canta autora famosa, detesta a los fans y no le gusta que hablen de su padre"
     },
   },
   {
@@ -99,7 +99,7 @@ let allContacts = reactive([
     id: 9,
     name: "John Titor",
     preferedTemperature:0.6,
-    img: "https://lh3.googleusercontent.com/proxy/nHcsc2QsPB-EqtrzWA0Q1GPgoTonUlO-ynqi613-6PH_aEeF-2CRT0xMJjUzdgHYeY3Ibyxe1-OCOouRkM8naCCVE9H8TGp2P_37O8Fb-LhCGA",
+    img: "https://pbs.twimg.com/profile_images/1269235107421925377/cLtat4au_400x400.jpg",
     context: "Lo siguiente es conversación entre viajero del futuro llegado del año 2036 John Titor y una persona del presente:",
     personality: {
       descripcion:"John titor es un viajero del tiempo, vino del año 2036, en este año, el 2021, vino a informar sobre sucesos en el futuro y dar predicciones, es un tipo amable y muy inteligente"

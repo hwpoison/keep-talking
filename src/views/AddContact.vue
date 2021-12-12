@@ -1,7 +1,7 @@
 <template>
   <NavBar :showBackButton=true>
-    <template #navbar-content> 
-      <p class="text-2xl font-light mt-3">Añadir nuevo contacto</p>
+    <template #navbar-title> 
+      <p class="flex-none text-2xl font-light justify-self-start mt-6 ml-2">Añadir nuevo contacto</p>
     </template>
   </NavBar> 
   <div class="mt-16 py-5 rounded-3 select-none">

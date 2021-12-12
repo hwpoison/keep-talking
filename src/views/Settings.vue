@@ -1,7 +1,7 @@
 <template>
     <NavBar :showBackButton=true>
-        <template #navbar-content>
-            <p class="text-2xl font-light mt-3">Configuración</p>
+        <template #navbar-title>
+            <p class="text-2xl font-light justify-self-start mt-6 ml-2">Configuración</p>
         </template>
     </NavBar>
     <div>

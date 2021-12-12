@@ -1,23 +1,38 @@
 <template>
+<div>
   <NavBar :showBackButton="true">
-    <template #navbar-content>
+    <template #navbar-title>
       <!-- contact photo -->
-      <div id="contact-photo" class="inline-block">
-        <img
-          :src="contactInfo.image"
-          class="object-cover"
-          alt="user image"
-        />
+      <div class="flex ml-2 mt-3">
+          <div class="flex-none" id="contact-photo">
+            <img
+              :src="contactInfo.image"
+              class="object-cover"
+              alt="user image"
+            />
+          </div>
+          <div class="text-left">
+            <p id="contact-name" class="inline-block text-center px-3 text-2xl">
+              {{ contactInfo.name }}
+            </p>
+            <p class="text-light text-md italic sm:pl-3 pl-3">{{ chatStatus }}</p>
+          </div>
       </div>
-      <div class="text-left">
-        <p id="contact-name" class="inline-block text-center px-3 text-2xl">
-          {{ contactInfo.name }}
-        </p>
-        <p class="text-light text-md italic sm:pl-3 pl-3">{{ chatStatus }}</p>
+    </template>
+    <template #navbar-content>
+        <button @click="show = !show" :class="'bg-blue-400'" class="text-white font-bold py-2 px-10 whitespace-no-wrap rounded transition duration-300"> Opciones <i class="fas fa-chevron-down ml-2"></i></button>
+        <div class="dropdown-wrapper mr-10 ">
+          <transition name="slide-fade">
+            <div :class="'bg-blue-400'" class="absolute dropdown-menu text-white rounded z-10 shadow-lg w-40 max-w-xs mr-20" v-show="show">
+              <ul class="list-none overflow-hidden rounded">
+                <a href="" class="flex py-2 px-4 transition duration-300 hover:bg-blue-200" :class="'theme-blue'">Reintentar ultimo mensaje</a>
+                <a href="" class="flex py-2 px-4 transition duration-300 hover:bg-blue-200" :class="'theme-blue'">Limpiar Chat</a>
+              </ul>
+            </div>
+          </transition>
       </div>
     </template>
   </NavBar>
-
   <!-- Chat content -->
   <div
     ref="chat"
@@ -48,7 +63,6 @@
       <!-- TODO: ADD TO BOTTOM BUTTON ARROW -->
     </div>
   </div>
-
   <!-- Message input box -->
   <div clss="flex justify-center">
     <form
@@ -65,6 +79,7 @@
       <button id="input-btn">Enviar</button>
     </form>
   </div>
+</div>
 </template>
 <script>
 import { reactive, ref, onUpdated, onMounted } from "vue"
@@ -84,6 +99,8 @@ export default {
   // eslint-disable-next-line
   setup() {
     const route = useRoute()
+
+    const show = ref(false)
 
     const chat = ref(null) // chat box reference
     const input = ref(null) // input box reference
@@ -192,6 +209,8 @@ export default {
       contactInfo,
       messages,
 
+      show,
+
       chatStatus,
       inputUserMessage,
 
@@ -202,7 +221,7 @@ export default {
 </script>
 <style scoped>
 #contact-photo > img {
-  @apply relative w-14 h-14;
+  @apply w-14 h-14;
   @apply rounded-full border border-gray-400 shadow-sm;
 }
 
@@ -213,4 +232,27 @@ export default {
   @apply active:bg-blue-500;
   @apply border-b-4 border-blue-700 hover:border-blue-500 rounded;
 }
+
+button{
+  cursor:pointer;
+  &:focus{
+    outline:none;
+  }
+}
+/* Enter and leave animations can use different */
+/* durations and timing functions.              */
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
+
 </style>
