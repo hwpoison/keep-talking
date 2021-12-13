@@ -1,5 +1,9 @@
 import { reactive } from "vue"
 
+const userInfo = reactive({
+  name:'Persona'
+})
+
 let messagesCollection = reactive({})
 
 let allContacts = reactive([
@@ -131,24 +135,37 @@ let allContacts = reactive([
   },
 ])
 
+const getUserInfo = () : Record<string, unknown> =>{
+  return userInfo
+}
 const loadUserDataAndConfiguration = () => {
-  // get chat historial
+  // chat historial
   const chatHistorial = localStorage.getItem("chatHistorial")
-  const contacts = localStorage.getItem("contacts")
   if (chatHistorial != null) {
     Object.assign(messagesCollection, JSON.parse(chatHistorial))
   }
+  // contact list
+  const contacts = localStorage.getItem("contacts")
   if (contacts != null) {
     Object.assign(allContacts, JSON.parse(contacts))
+  }
+  // user basic information
+  const userData = localStorage.getItem('userInfo')
+  if(userData!=null){
+    Object.assign(userInfo, JSON.parse(userData))
   }
 }
 
 const saveConversations = (): void => {
-  localStorage.setItem("chatHistorial", JSON.stringify(messagesCollection)) // save progress
+  localStorage.setItem("chatHistorial", JSON.stringify(messagesCollection))
 }
 
 const saveContacts = (): void => {
-  localStorage.setItem("contacts", JSON.stringify(allContacts)) // save progress
+  localStorage.setItem("contacts", JSON.stringify(allContacts))
+}
+
+const saveUserInfo = (): void =>{
+  localStorage.setItem("userInfo", JSON.stringify(userInfo))
 }
 
 const deleteAllConversations = (): void => {
@@ -204,9 +221,14 @@ const deleteLastMessage = (chatId: number): void => {
   saveConversations()
 }
 
+const changeUserName = (newName : string):void=>{
+  userInfo.name = newName
+}
 loadUserDataAndConfiguration()
 
 export {
+  getUserInfo,
+  changeUserName,
   messagesCollection,
   addMessage,
   deleteAllConversations,
@@ -218,4 +240,5 @@ export {
   getContactInfo,
   allContacts,
   saveContacts,
+  saveUserInfo
 }

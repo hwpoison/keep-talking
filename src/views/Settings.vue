@@ -5,7 +5,10 @@
         </template>
     </NavBar>
     <div>
-        <form class="mt-32" @submit.prevent="test">
+        <form style="margin-top:89px">
+        <label class="text-2xl font-light select-none" for="username">Tu nombre:</label><br>
+        <input v-model="userName.name" type="text" id="username" name="username" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
+
         <label class="text-2xl font-light select-none" for="apikey">Open AI API KEY:</label><br>
         <input v-model="apiKey" type="text" id="apikey" name="apikey" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
         
@@ -31,9 +34,9 @@
     </div>
 </template>
 <script lang="ts">
-import { watchEffect , ref } from 'vue'
+import { watchEffect ,ref } from 'vue'
 import { openai } from '@/openai'
-import { deleteAllConversations, deleteAllContacts, deleteAll } from '@/chat.ts'
+import { saveUserInfo, getUserInfo, deleteAllConversations, deleteAllContacts, deleteAll } from '@/chat.ts'
 import NavBar from '@/components/NavBar.vue'
 
 export default {
@@ -45,6 +48,7 @@ export default {
     setup(){
         const apiKey = ref(openai.apiKey)
         const actualEngine = ref(openai.configuration.engine)
+        const userName = ref(getUserInfo())
 
         const deleteConversations = () : void =>{
             deleteAllConversations()
@@ -57,6 +61,7 @@ export default {
         const deleteAllConfiguration = () : void => {
             deleteAll()
         }
+
         watchEffect(()=>{
             openai.setApiKey(apiKey.value)
             openai.saveConfiguration()
@@ -66,7 +71,15 @@ export default {
             openai.saveConfiguration()
         })
 
+        watchEffect(()=>{
+            // avoid empty name
+            if(userName.value.name==''){
+                userName.value.name = 'Persona'
+            }
+            saveUserInfo()
+        })
         return {
+            userName,
             apiKey,
             actualEngine,
 

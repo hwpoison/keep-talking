@@ -22,13 +22,12 @@ class openaiAPI {
     this.configuration.engine = engine
   }
 
-  async chatGen(prompt, botName, engine = null, temperature = null) {
-    let stopwords = ["Usuario:", botName + ":"]
+  async chatGen(prompt, userName, botName, engine = null, temperature = null) {
+    let stopwords = [userName + ':', botName + ":"]
     let selectedEngine = engine?engine:this.configuration.engine
     let selectedTemperature = temperature? temperature:this.configuration.temperature
 
     if (selectedEngine != "davinci-instruct-beta-v3") stopwords.push("\n")
-
     console.log("=>Input:", prompt, 
       "\n\n=>Engine:", selectedEngine,
       "\n\n=>Temperature:", selectedTemperature)

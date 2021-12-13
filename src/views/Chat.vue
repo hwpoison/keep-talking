@@ -56,12 +56,12 @@
             :key="idx"
           >
             <div
-              class="place-self-start text-left cursor-default"
-              :class="message.from == userName ? 'place-self-end pl-20 ' : 'pr-20'"
+              class="place-self-start cursor-default"
+              :class="message.from == contactInfo.name ? 'text-left pr-20' : 'place-self-end  pl-20'"
             >
               <div
                 class="bg-white p-3 word-break rounded-r-lg rounded-1 shadow"
-                :class="{ 'rounded-l-lg bg-green-100': message.from == userName }"
+                :class="{ 'bg-green-100 rounded-l-lg': message.from != contactInfo.name }"
               >
                 {{ message.message }}
               </div>
@@ -94,7 +94,7 @@ import { reactive, ref, onUpdated, onMounted } from "vue"
 import { useRoute } from "vue-router"
 import { openai } from "@/openai"
 
-import { deleteLastMessage, getContactInfo, getOrCreateChat, addMessage, clearChat } from "@/chat.ts"
+import { getUserInfo, deleteLastMessage, getContactInfo, getOrCreateChat, addMessage, clearChat } from "@/chat.ts"
 
 import NavBar from "@/components/NavBar"
 
@@ -108,6 +108,8 @@ export default {
   setup() {
     const route = useRoute()
 
+    
+    // refs
     const chat = ref(null) // chat box reference
     const userInput = ref(null) // input box reference
 
@@ -115,18 +117,16 @@ export default {
 
 
     const chatStatus = ref("Online")
-    const userName = 'Persona'
-
     const showMenu = ref(false)
 
     const contactID = route.params.id
     const messages = ref(getOrCreateChat(contactID))
 
+    const userInfo = reactive(getUserInfo())
     const contactInfo = reactive(getContactInfo(contactID))
     
     const contextToken = ref(contactInfo.name + ":" + JSON.stringify(contactInfo.personality) + "\n" + contactInfo.context + '\n')
 
-    const generated = ref("")
     const scrollChatToBottom = () => {
       chat.value.scrollTop = chat.value.scrollHeight
     }
@@ -141,16 +141,25 @@ export default {
       deleteLastMessage(contactID)
     }
 
+    const getActualDate = ()=>{
+      const date = new Date()
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString('es-ES', options) // in natural language
+    }
+
     const send = async (trying=false) => {
-      let newquery = contextToken.value
+      // 1) prepare and generate response
+      let newquery = ''
+      newquery+= 'Hoy es ' + getActualDate() + '\n'
+      newquery+=contextToken.value
+
       if(!trying){
         let prompt = inputUserMessage.value
         // add user message to chatbox
-        addMessage(route.params.id, userName, prompt)
+        addMessage(route.params.id, userInfo.name, prompt)
         inputUserMessage.value = ""
         scrollChatToBottom()
       }
-      // 1) prepare and generate response
       /*
           Inject chat style text
             <...conversation context...>
@@ -165,9 +174,9 @@ export default {
       // 2) send request
       chatStatus.value = "Escribiendo..."
       try {
-
         const response = await openai.chatGen(
           newquery,
+          userInfo.name,
           contactInfo.name,
           contactInfo.preferedEngine,
           contactInfo.preferedTemperature
@@ -192,6 +201,7 @@ export default {
 
     onMounted(() => {
       getContactInfo(contactID)
+      scrollChatToBottom()
       userInput.value.focus()
     })
 
@@ -206,9 +216,9 @@ export default {
       messages,
       cleanChat,
       showMenu,
+      userInfo,
       retryLast,
       undoMessage,
-      userName,
       chatStatus,
       inputUserMessage,
 
