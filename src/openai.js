@@ -8,7 +8,7 @@ class openaiAPI {
     this.apiKey = OPENAI_API_KEY
     this.configuration = {
       temperature: 0.9,
-      engine: "ada"
+      engine: "curie"
     }
     this._openai = new OpenAI(this.apiKey)
   }
@@ -27,7 +27,7 @@ class openaiAPI {
     let selectedEngine = engine?engine:this.configuration.engine
     let selectedTemperature = temperature? temperature:this.configuration.temperature
 
-    if (selectedEngine != "davinci-instruct-beta-v3") stopwords.push("\n")
+    if (!selectedEngine.includes('instructor')) stopwords.push("\n")
     console.log("=>Input:", prompt, 
       "\n\n=>Engine:", selectedEngine,
       "\n\n=>Temperature:", selectedTemperature)
@@ -47,6 +47,20 @@ class openaiAPI {
 
     console.log("=>Output", gptResponse.data.choices[0].text)
     return gptResponse
+  }
+
+  async chatSynth(prompt, userName, botName){
+      const gptSearch = await this._openai.search({
+          engine: 'curie-instruct-beta-v2',
+          prompt: prompt,
+          maxTokens: 150,
+          temperature: 0.09, // a number between 0 and 1 that determines how many creative risks the engine takes when generating text.
+          topP: 1,
+          presencePenalty: 0.0, // a number between 0 and 1. The higher this value the model will make a bigger effort in talking about new topics.
+          frequencyPenalty: 0.0, // a number between 0 and 1. The higher this value the model will make a bigger effort in not repeating itself.
+          stream: false
+        })
+      console.log("Output=>", gptSearch.data.choices[0])
   }
 
   loadUserConfiguration() {

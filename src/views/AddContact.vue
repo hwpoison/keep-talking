@@ -1,22 +1,23 @@
 <template>
+<div class="flex flex-col h-screen">
   <NavBar :showBackButton=true>
     <template #navbar-title> 
       <p class="flex-none text-2xl font-light justify-self-start mt-6 ml-2">Añadir nuevo contacto</p>
     </template>
   </NavBar> 
-  <div class="mt-16 py-5 rounded-3 select-none">
-    <div v-show="confirmationNotification" class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
+  <div v-show="confirmationNotification" class="pt-1 rounded-3 select-none">
+    <div  class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
       <p class="font-bold">Listo</p>
       <p class="text-sm">El contacto ha sido añadido correctamente</p>
     </div>
   </div>
-  <div>
-    <form @submit.prevent="confirmContact()">
+  <div class="mt-24 overflow-y-scroll h-screen">
+    <form class="mt-3" @submit.prevent="confirmContact()">
       <label class="text-2xl font-light text-gray-500  select-none" for="contact-name">Nombre</label><br>
       <input v-model="contactInfo.name" type="text" id="contact-name" name="contact-name" class="font-monospace p-3 w-4/5 h-12 border border-b-4" placeholder="Toda personas tienen un nombre..." required><br><br>
       
       <label class="text-2xl font-light select-none text-gray-500" for="contact-description">Descripción</label><br>
-      <textarea class="border border-b-4 p-2 " v-model="contactInfo.description" style="width:80%" name="contact-description">
+      <textarea class="border border-b-4 p-2 " placeholder="Descripción breve de la personaldiad..." v-model="contactInfo.description" style="width:80%" name="contact-description">
       </textarea>
       <br><br>
       <label class="text-2xl font-light select-none text-gray-500" for="contact-description">Etiquetas</label><br>
@@ -34,11 +35,12 @@
       <br>
       </form>
   </div>
+</div>
 </template>
 <script>
 import { ref } from 'vue'
-import NavBar from '@/components/NavBar.vue'
-import { allContacts, saveContacts } from '@/chat.ts'
+import NavBar from '../components/NavBar.vue'
+import { contacts, saveContacts, addNewContact } from '../chat.ts'
 export default {
   name:'AddNewContact',
   components:{
@@ -57,7 +59,7 @@ export default {
 
     const confirmContact = ()=>{
       const newContact = {
-        id:allContacts.length+1,
+        id:contacts.list.length+1,
         name:contactInfo.value.name,
         img:contactInfo.value.img?contactInfo.value.img:"https://madridsalud.es/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png",
         context:'Lo siguiente es una conversación con ' + contactInfo.value.name,
@@ -66,12 +68,11 @@ export default {
           cualidades:Array.from(contactInfo.value.tags.split(","),str=>str.trim())
         }
       }
-      allContacts.push(newContact)
+      addNewContact(newContact)
       confirmationNotification.value = true
       contactInfo.value.name = '' // re
       contactInfo.value.description = ''
       contactInfo.value.tags = ''
-      saveContacts()
     }
 
     return {

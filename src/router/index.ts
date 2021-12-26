@@ -1,21 +1,23 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 import Chat from '../views/Chat.vue'
-import Contacts from '../views/Contacts.vue'
 import Settings from '../views/Settings.vue'
 import AddContact from '../views/AddContact.vue'
 import Help from '../views/Help.vue'
+import Switch from '../views/Switch.vue'
+import PageNotFound from '../views/PageNotFound.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Contacts',
-    component: Contacts
+    name: 'Switch',
+    component: Switch
   },
   {
-    path: '/chat/:id',
+    path: '/chat/:contactId',
     name: 'ChatRoom',
-    component: Chat
+    component: Chat,
+    props: true,
   },
   {
     path: '/settings',
@@ -31,11 +33,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/help',
     name: 'Help',
     component: Help
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: '404',
+    component:PageNotFound
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history:createWebHistory(),
   routes
 })
 

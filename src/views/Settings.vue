@@ -1,22 +1,23 @@
 <template>
     <NavBar :showBackButton=true>
         <template #navbar-title>
-            <p class="text-2xl font-light justify-self-start mt-6 ml-2">Configuración</p>
+            <p class="text-2xl font-light justify-self-start ml-2 pt-6">Configuración</p>
         </template>
     </NavBar>
-    <div>
-        <form style="margin-top:89px">
-        <label class="text-2xl font-light select-none" for="username">Tu nombre:</label><br>
+    <ConfirmDialog ref="dialog"></ConfirmDialog>
+    <div class="mt-24">
+        <label class="text-2xl font-light text-gray-500   select-none" for="username">Tu nombre:</label><br>
         <input v-model="userName.name" type="text" id="username" name="username" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
 
-        <label class="text-2xl font-light select-none" for="apikey">Open AI API KEY:</label><br>
+        <label class="text-2xl font-light text-gray-500   select-none" for="apikey">Open AI API KEY:</label><br>
         <input v-model="apiKey" type="text" id="apikey" name="apikey" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
         
-        <label class="text-2xl font-light select-none" for="model">Default Model:</label><br>
+        <label class="text-2xl font-light text-gray-500   select-none" for="model">Default Model:</label><br>
         <select v-model="actualEngine" class="font-monospace p-3 w-4/5 h-12 border border-b-4" name="model" id="model">
             <option value="ada">Ada</option>
             <option value="davinci">Davinci (Better for conversation)</option>
             <option value="davinci-instruct-beta-v3">Davinci Instructor Beta v3</option>
+            <option value="curie">Curie</option>
         </select>
         <br>
         <button class="mt-14 object-center transition duration-500 bg-blue-500 hover:bg-blue-400 active:bg-blue-500 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" @click="deleteConversations()">
@@ -30,36 +31,58 @@
         <button class="mt-1 object-center transition duration-500 bg-red-500 hover:bg-red-400 active:bg-red-500 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded" @click="deleteAllConfiguration()">
             Eliminar Todo
         </button> 
-        </form>
+        <br>
+        <br>
     </div>
 </template>
 <script lang="ts">
 import { watchEffect ,ref } from 'vue'
-import { openai } from '@/openai'
-import { saveUserInfo, getUserInfo, deleteAllConversations, deleteAllContacts, deleteAll } from '@/chat.ts'
-import NavBar from '@/components/NavBar.vue'
+import { openai } from '../openai'
+import { saveUserInfo, getUserInfo, deleteAllConversations, deleteAllContacts, deleteAll } from '../chat'
+import NavBar from '../components/NavBar.vue'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 
 export default {
     name:'Settings',
     components:{
-        NavBar
+        NavBar,
+        ConfirmDialog
     },
     // eslint-disable-next-line
     setup(){
         const apiKey = ref(openai.apiKey)
         const actualEngine = ref(openai.configuration.engine)
         const userName = ref(getUserInfo())
+        const dialog = ref(null)
 
         const deleteConversations = () : void =>{
-            deleteAllConversations()
+            dialog.value.show = true
+            let confirmDeletion = {
+                title:'¿Eliminar Conversaciónes?',
+                message: 'Todas las conversaciones serán eliminadas.',
+                onaccept: () => {deleteAllConversations();dialog.value.show=false}
+            }
+            Object.assign(dialog.value.settings, confirmDeletion)
         }
 
         const deleteContacts = () : void => {
-            deleteAllContacts()
+            dialog.value.show = true
+            let confirmDeletion = {
+                title:'¿Eliminar contactos?',
+                message: 'Todos los contactos serán eliminados.',
+                onaccept: () => {deleteAllContacts();dialog.value.show=false}
+            }
+            Object.assign(dialog.value.settings, confirmDeletion)
         }
 
         const deleteAllConfiguration = () : void => {
-            deleteAll()
+            dialog.value.show = true
+            let confirmDeletion = {
+                title:'¿Eliminar toda la configuración?',
+                message: 'Toda la configuración será eliminada, incluido contactos e historiales.',
+                onaccept: () => {deleteAll();dialog.value.show=false}
+            }
+            Object.assign(dialog.value.settings, confirmDeletion)
         }
 
         watchEffect(()=>{
@@ -85,7 +108,9 @@ export default {
 
             deleteConversations,
             deleteContacts,
-            deleteAllConfiguration
+            deleteAllConfiguration,
+
+            dialog
         }
     }
 }
