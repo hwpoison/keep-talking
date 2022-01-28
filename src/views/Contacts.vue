@@ -45,11 +45,13 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 import { contacts } from '../chat'
 
 import NavBar from '../components/NavBar.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import Logo from '../components/Logo.vue'
+
 export default {
     name:"Contacts",
     components:{

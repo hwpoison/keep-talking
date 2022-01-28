@@ -39,7 +39,6 @@ export default {
     },
     // eslint-disable-next-line
     setup(props){
-        console.log(props.fixed)
         const router = useRouter();
         const goBack = () : void => {
             router.push('/')

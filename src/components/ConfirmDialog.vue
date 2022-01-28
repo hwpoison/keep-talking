@@ -49,6 +49,7 @@ export default {
 	setup(){
 		const show = ref(false)
     const type = ref('alert')
+    
 		const settings = reactive({
 			title: 'Titulo',
 			message: 'Contenido del dialogo',

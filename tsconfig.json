@@ -5,6 +5,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "strict": false,
+    "skipLibCheck": true,
     "jsx": "preserve",
     "sourceMap": true,
     "resolveJsonModule": true,
@@ -13,12 +14,5 @@
     "types":["vite/client", "vite-plugin-pwa/client"],
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": [
-    "dist",
-    "node_modules",
-    "test",
-    "test.ts",
-    "**/*.spec.ts",
-    "**/*.worker.ts",
-  ]
+  "exclude": []
 }

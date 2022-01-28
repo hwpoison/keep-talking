@@ -19,12 +19,12 @@ export default {
     const dialog = ref(null)
     const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW();
 
-    const close = async () : void => {
+    const close = async () : Promise<void> => {
       offlineReady.value = false;
       needRefresh.value = false;
     }
 
-    const updateSW = async () : void => {
+    const updateSW = async () : Promise<void> => {
       await updateServiceWorker();
     }
 

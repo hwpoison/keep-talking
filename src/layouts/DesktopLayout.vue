@@ -28,7 +28,6 @@ export default {
         const contactsView = ref(null)
         const selected = (contactId : number) : void => {
             selectedContact.value = contactId
-            console.log(contactsView.value, contactsView.selectedContact, contactId)
             contactsView.value.selectedContact = contactId
         }
         return {

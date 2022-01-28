@@ -104,13 +104,14 @@
 <script>
 import { reactive, ref, onBeforeUpdate, onMounted } from "vue"
 import { useRoute } from "vue-router"
-import { openai } from "../openai.js"
+import { openai } from "../openai/openai.js"
 
 import { getUserInfo, deleteLastMessage, getContactInfo, getOrCreateChat, addMessage, clearChat } from "../chat.ts"
 
 import NavBar from "../components/NavBar.vue"
 import Logo from '../components/Logo.vue'
 import ToClickOutside from '../components/ToClickOutside.vue'
+
 /* eslint-disable */
 export default {
   name: "Chat",

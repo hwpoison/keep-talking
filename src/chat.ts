@@ -1,6 +1,6 @@
 import { reactive } from "vue";
-import demoContacts from "./contacts";
-import * as store from "./localStorage";
+import demoContacts from "./utils/contacts";
+import * as store from "./utils/localStorage";
 
 const userInfo = reactive({
   name: "Persona",
@@ -16,7 +16,7 @@ const getUserInfo = (): Record<string, unknown> => {
 
 const loadUserDataAndConfiguration = () => {
   // chat historial
-  console.log("loading user info")
+  console.info("[+]Loading user info")
   const storeChatHistorial = store.read("chatHistorial");
   if (storeChatHistorial != null) {
     Object.assign(messagesCollection, storeChatHistorial);

@@ -15,7 +15,7 @@ export default defineConfig({
       strategies: "injectManifest",
       manifest: {
         name: "Keep Talking",
-        short_name: "Keep Talk",
+        short_name: "Keep Talking",
         theme_color: "#3b82f6",
         start_url: "/",
         display: "standalone",

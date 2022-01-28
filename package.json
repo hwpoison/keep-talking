@@ -1,9 +1,9 @@
 {
   "name": "keep-talking",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

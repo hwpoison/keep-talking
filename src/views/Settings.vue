@@ -14,11 +14,14 @@
         
         <label class="text-2xl font-light text-gray-500   select-none" for="model">Default Model:</label><br>
         <select v-model="actualEngine" class="font-monospace p-3 w-4/5 h-12 border border-b-4" name="model" id="model">
-            <option value="ada">Ada</option>
-            <option value="davinci">Davinci (Better for conversation)</option>
-            <option value="davinci-instruct-beta-v3">Davinci Instructor Beta v3</option>
-            <option value="curie">Curie</option>
+           <!-- <option value="text-ada-001" selected>Ada</option>
+            <option value="text-davinci-001">Davinci</option>
+            <option value="text-curie-001">Curie</option>-->
+            <option v-for='(label, name) in engines1' :value=label>{{name}}</option>
         </select>
+        <br>
+        <div v-for="label, name in engines1">
+        </div>
         <br>
         <button class="mt-14 object-center transition duration-500 bg-blue-500 hover:bg-blue-400 active:bg-blue-500 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" @click="deleteConversations()">
             Eliminar Conversaciónes
@@ -37,7 +40,10 @@
 </template>
 <script lang="ts">
 import { watchEffect ,ref } from 'vue'
-import { openai } from '../openai'
+
+import { openai } from '../openai/openai'
+import { engines } from '../openai/engines'
+
 import { saveUserInfo, getUserInfo, deleteAllConversations, deleteAllContacts, deleteAll } from '../chat'
 import NavBar from '../components/NavBar.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
@@ -50,11 +56,12 @@ export default {
     },
     // eslint-disable-next-line
     setup(){
+        console.log(engines)
         const apiKey = ref(openai.apiKey)
         const actualEngine = ref(openai.configuration.engine)
         const userName = ref(getUserInfo())
         const dialog = ref(null)
-
+        const engines1 = engines
         const deleteConversations = () : void =>{
             dialog.value.show = true
             let confirmDeletion = {
@@ -110,7 +117,8 @@ export default {
             deleteContacts,
             deleteAllConfiguration,
 
-            dialog
+            dialog,
+            engines1
         }
     }
 }

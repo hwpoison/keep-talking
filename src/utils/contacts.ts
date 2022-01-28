@@ -1,19 +1,21 @@
-interface Contacto {
+import { engines } from '../openai/engines'
+
+interface Contact {
   id : number,
   name : string,
-  preferedEngine: string,
-  preferedTemperature: number,
-  img : string,
+  preferedEngine?: string,
+  preferedTemperature?: number,
+  img?: string,
   context : string,
   [personality : string] : any
 }
 
-const allContacts = [
+const allContacts : Contact[] = [
   {
     id: 778,
     name: "Dr. Know",
-    preferedEngine: "davinci-instruct-beta-v3", // force engine
     preferedTemperature: 0.5,
+    preferedEngine: engines['Davinci Instruct'],
     img: "https://d7lju56vlbdri.cloudfront.net/var/ezwebin_site/storage/images/_aliases/image671_405/media/images/inteligencia-artificial_warner-bros/5972568-1-esl-MX/Inteligencia-Artificial_Warner-Bros.png",
     context:
       "Conversación entre un cliente y Dr. Know, un asistente virtual que tiene todo el conocimiento de la humanidad.",
@@ -75,7 +77,6 @@ const allContacts = [
   {
     id: 783,
     name: "Soporte Técnico",
-    preferedEngine: "davinci-instruct-beta-v3", // force engine
     preferedTemperature: 0.7,
     img: "https://www.vortexits.com/assets/images/avatar/cargo-soporte-TI-Avatar.png",
     context:

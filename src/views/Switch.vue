@@ -1,7 +1,8 @@
 <script>
+// Switch between Mobile and Desktop View
 import { h, resolveComponent } from "vue"
 import Contacts from "../views/Contacts.vue"
-import DesktopLayout from "../views/DesktopLayout.vue"
+import DesktopLayout from "../layouts/DesktopLayout.vue"
 
 export default {
 	components: {
