@@ -28,7 +28,7 @@ class openaiAPI {
     let selectedEngine = engine?engine:this.configuration.engine
     let selectedTemperature = temperature? temperature:this.configuration.temperature
 
-    if (!selectedEngine.includes('instructor')) stopwords.push("\n")
+    if (!selectedEngine.includes('text-')) stopwords.push("\n")
     console.log("=>Input:", prompt, 
       "\n\n=>Engine:", selectedEngine,
       "\n\n=>Temperature:", selectedTemperature)
