@@ -1,29 +1,27 @@
 <template>
+<div class="absolute inset-0 flex flex-col">
     <NavBar :showBackButton=true>
         <template #navbar-title>
             <p class="text-2xl font-light justify-self-start ml-2 pt-6">Configuración</p>
         </template>
     </NavBar>
     <ConfirmDialog ref="dialog"></ConfirmDialog>
-    <div class="mt-24">
-        <label class="text-2xl font-light text-gray-500   select-none" for="username">Tu nombre:</label><br>
-        <input v-model="userName.name" type="text" id="username" name="username" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
+    <p style="color:red"> Provisory Settings </p>
+    <div class="flex-1 pt-2 overflow-y-scroll">
+        <label class="text-2xl font-light text-gray-500 select-none" for="username">Tu nombre:</label><br>
+        <input v-model="inputUserName.name" type="text" id="username" name="username" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
 
         <label class="text-2xl font-light text-gray-500   select-none" for="apikey">Open AI API KEY:</label><br>
-        <input v-model="apiKey" type="text" id="apikey" name="apikey" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
+        <input v-model="inputApiKey" type="text" id="apikey" name="apikey" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
         
         <label class="text-2xl font-light text-gray-500   select-none" for="model">Default Model:</label><br>
-        <select v-model="actualEngine" class="font-monospace p-3 w-4/5 h-12 border border-b-4" name="model" id="model">
-           <!-- <option value="text-ada-001" selected>Ada</option>
-            <option value="text-davinci-001">Davinci</option>
-            <option value="text-curie-001">Curie</option>-->
-            <option v-for='(label, name) in engines1' :value=label>{{name}}</option>
+        <select v-model="inputActualEngine" class="font-monospace p-3 w-4/5 h-12 border border-b-4" name="model" id="model">
+            <option v-for='(label, name) in allEngines' :value=label>{{ name }}</option>
         </select>
         <br>
-        <div v-for="label, name in engines1">
+        <div v-for="label, name in allEngines">
         </div>
-        <br>
-        <button class="mt-14 object-center transition duration-500 bg-blue-500 hover:bg-blue-400 active:bg-blue-500 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" @click="deleteConversations()">
+        <button class="mt-8 object-center transition duration-500 bg-blue-500 hover:bg-blue-400 active:bg-blue-500 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" @click="deleteConversations()">
             Eliminar Conversaciónes
         </button> 
         <br>
@@ -37,6 +35,7 @@
         <br>
         <br>
     </div>
+</div>
 </template>
 <script lang="ts">
 import { watchEffect ,ref } from 'vue'
@@ -54,14 +53,13 @@ export default {
         NavBar,
         ConfirmDialog
     },
-    // eslint-disable-next-line
     setup(){
-        console.log(engines)
-        const apiKey = ref(openai.apiKey)
-        const actualEngine = ref(openai.configuration.engine)
-        const userName = ref(getUserInfo())
+        const inputApiKey = ref(openai.apiKey)
+        const inputActualEngine = ref(openai.configuration.engine)
+        const inputUserName = ref(getUserInfo())
         const dialog = ref(null)
-        const engines1 = engines
+        const allEngines = engines
+
         const deleteConversations = () : void =>{
             dialog.value.show = true
             let confirmDeletion = {
@@ -93,32 +91,32 @@ export default {
         }
 
         watchEffect(()=>{
-            openai.setApiKey(apiKey.value)
+            openai.setApiKey(inputApiKey.value)
             openai.saveConfiguration()
         })
         watchEffect(()=>{
-            openai.setEngine(actualEngine.value)
+            openai.setEngine(inputActualEngine.value)
             openai.saveConfiguration()
         })
 
         watchEffect(()=>{
             // avoid empty name
-            if(userName.value.name==''){
-                userName.value.name = 'Persona'
+            if(inputUserName.value.name==''){
+                inputUserName.value.name = 'Persona'
             }
             saveUserInfo()
         })
         return {
-            userName,
-            apiKey,
-            actualEngine,
+            inputUserName,
+            inputApiKey,
+            inputActualEngine,
 
             deleteConversations,
             deleteContacts,
             deleteAllConfiguration,
 
             dialog,
-            engines1
+            allEngines
         }
     }
 }

@@ -59,7 +59,7 @@ class openaiAPI {
         this.configuration.temperature = userConfig.temperature
       if (userConfig.engine) this.configuration.engine = userConfig.engine
     }else{
-      this.configuration.engine = engines['Davinci']
+      this.configuration.engine = engines['Davinci Instruct']
     }
   }
 

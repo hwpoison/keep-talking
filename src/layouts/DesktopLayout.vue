@@ -1,11 +1,22 @@
 <template>
     <div id="desktop-layout">
-        <div class="flex flex-grow">
-            <div class="flex-none" style="width: 420px">
-                <Contacts ref="contactsView" @selected="selected" :emitSelected=true />
+        <div class="flex flex-row">
+            <div class="relative h-screen" style="width: 32%">
+                <Contacts
+                    ref="contactsView"
+                    @selected="selected"
+                    :emitSelected="true"
+                />
             </div>
-            <div class="shrink w-screen">
-                <Chat v-bind="{ 'backMode':false, 'contactId':selectedContact }" :key="selectedContact" />
+            <div
+                class="relative w-1 h-20 bg-blue-400 resizeur"
+                id="resizer"
+            ></div>
+            <div class="relative flex-1">
+                <Chat
+                    v-bind="{ backMode: false, contactId: selectedContact }"
+                    :key="selectedContact"
+                />
             </div>
         </div>
     </div>
@@ -15,26 +26,35 @@ import { onMounted, ref, watchEffect } from "vue"
 
 import Contacts from "../views/Contacts.vue"
 import Chat from "../views/Chat.vue"
+import { makeResizable } from "../utils/divHorizontalResize.js"
 
 export default {
     name: "DesktopLayout",
     components: {
         Contacts,
-        Chat
+        Chat,
     },
     // eslint-disable-next-line
     setup() {
         const selectedContact = ref(null)
         const contactsView = ref(null)
-        const selected = (contactId : number) : void => {
+        const selected = (contactId: number): void => {
             selectedContact.value = contactId
             contactsView.value.selectedContact = contactId
         }
+        onMounted(() => {
+            makeResizable("resizer")
+        })
         return {
             selected,
             contactsView,
-            selectedContact
+            selectedContact,
         }
     },
 }
 </script>
+<style scoped>
+.resizeur {
+    cursor: col-resize;
+}
+</style>

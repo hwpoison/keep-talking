@@ -1,5 +1,5 @@
 <template>
-<div class="flex flex-col h-screen">
+<div class="absolute inset-0 flex flex-col">
   <NavBar :showBackButton=true>
     <template #navbar-title> 
       <p class="flex-none text-2xl font-light justify-self-start mt-6 ml-2">Añadir nuevo contacto</p>
@@ -11,27 +11,25 @@
       <p class="text-sm">El contacto ha sido añadido correctamente</p>
     </div>
   </div>
-  <div class="mt-24 overflow-y-scroll h-screen">
+  <div class="flex-1 overflow-y-scroll">
     <form class="mt-3" @submit.prevent="confirmContact()">
+      <label class="text-2xl font-light select-none text-gray-500" for="contact-description">Foto</label><br>
+      <input class="border py-3 border-b-4 p-3 placeholder:italic placeholder:text-gray-400 " placeholder="Link de una imagen (no obligatoria)" v-model="contactInfo.img" style="width:80%" name="contact-description"><br>
+
       <label class="text-2xl font-light text-gray-500  select-none" for="contact-name">Nombre</label><br>
-      <input v-model="contactInfo.name" type="text" id="contact-name" name="contact-name" class="font-monospace p-3 w-4/5 h-12 border border-b-4" placeholder="Toda personas tienen un nombre..." required><br><br>
+      <input v-model="contactInfo.name" type="text" id="contact-name" name="contact-name" class="font-monospace p-3 w-4/5 h-12 border border-b-4" placeholder="Toda personas tienen un nombre..." required><br>
       
       <label class="text-2xl font-light select-none text-gray-500" for="contact-description">Descripción</label><br>
       <textarea class="border border-b-4 p-2 " placeholder="Descripción breve de la personaldiad..." v-model="contactInfo.description" style="width:80%" name="contact-description">
       </textarea>
-      <br><br>
+      <br>
       <label class="text-2xl font-light select-none text-gray-500" for="contact-description">Etiquetas</label><br>
       <input class="border py-3 border-b-4 p-3 placeholder:italic placeholder:text-gray-400 " placeholder="Cualidades o detalles de la persona separadas por coma" v-model="contactInfo.tags" style="width:80%" name="contact-description" required><br><br>
-
-      <label class="text-2xl font-light select-none text-gray-500" for="contact-description">Foto</label><br>
-      <input class="border py-3 border-b-4 p-3 placeholder:italic placeholder:text-gray-400 " placeholder="Link de una imagen (no obligatoria)" v-model="contactInfo.img" style="width:80%" name="contact-description">
-
       <div class="mt-4">
         <button class="mt-3 object-center transition duration-500 bg-blue-500 hover:bg-blue-400 active:bg-blue-500 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
           Confirmar
         </button> 
       </div>
-      <br>
       <br>
       </form>
   </div>

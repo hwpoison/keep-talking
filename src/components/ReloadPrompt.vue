@@ -4,7 +4,7 @@
   </div>
 </template>
 <script lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRegisterSW } from "virtual:pwa-register/vue";
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 
@@ -44,7 +44,7 @@ export default {
       }
     }
 
-    setTimeout(()=>{check()},2000)
+    onMounted(()=>{setTimeout(()=>{check()},2000)})
 
     return { offlineReady, needRefresh, updateServiceWorker, close, dialog };
   }

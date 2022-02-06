@@ -3,7 +3,7 @@ import demoContacts from "./utils/contacts";
 import * as store from "./utils/localStorage";
 
 const userInfo = reactive({
-  name: "Persona",
+  name: "Usuario"
 });
 
 let contacts = reactive({'list':[]})
@@ -23,8 +23,11 @@ const loadUserDataAndConfiguration = () => {
   }
   // contact list
   const storeContacts = store.read("contacts");
-  if (storeContacts != null)
+  
+  if (storeContacts != null){
     contacts.list = storeContacts.list
+    console.log("recovering:", storeContacts)
+  }
   Object.assign(contacts.list, demoContacts)
 
   // user basic information
@@ -33,6 +36,15 @@ const loadUserDataAndConfiguration = () => {
     Object.assign(userInfo, storeUserInfo);
   }
 };
+
+const getLastMessage = (contactId) : string => {
+  let allMessages = messagesCollection[contactId]
+  if(allMessages){
+    console.log(allMessages)
+    let last = allMessages[Math.max(...Object.keys(allMessages))]
+    return last?last.message:''
+  }
+}
 
 const saveHistorial = (): void => {
   store.write("chatHistorial", messagesCollection);
@@ -56,7 +68,6 @@ const clearObject = (object) => {
     clearArray(object[idx[0]])
   })
 }
-
 
 const deleteAllConversations = (): void => {
   clearObject(messagesCollection)
@@ -93,12 +104,18 @@ const addNewContact = (contactInfo : Record<string, unknown>) => {
   saveContacts()
 }
 
-const addMessage = (chatId: number, sender: string, msgText: string): void => {
+const addMessage = (chatId: number, sender: string, msgText: string, user : number = false): void => {
   messagesCollection[chatId].push({
     id: messagesCollection[chatId].length,
-    message: msgText,
+    message: msgText.trim(),
     from: sender,
   });
+  const currentContact = contacts.list.find(contact=>contact.id==chatId)
+  if(currentContact){
+    const contactIndex = contacts.list.indexOf(currentContact)
+    contacts.list.unshift(contacts.list.splice(contactIndex,1)[0])
+  }
+  saveContacts()
   saveHistorial();
 };
 
@@ -132,6 +149,7 @@ export {
   deleteLastMessage,
   getOrCreateChat,
   getContactInfo,
+  getLastMessage,
   addNewContact,
   saveContacts,
   saveUserInfo,

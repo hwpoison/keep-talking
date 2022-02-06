@@ -3,6 +3,7 @@
 import { h, resolveComponent } from "vue"
 import Contacts from "../views/Contacts.vue"
 import DesktopLayout from "../layouts/DesktopLayout.vue"
+import { deviceTypeByViewport } from '../utils/detectDevice.js'
 
 export default {
 	components: {
@@ -13,7 +14,7 @@ export default {
 	setup() {
 		const MobileLayout = resolveComponent("Contacts")
 		return () => {
-			if (window.matchMedia("(max-width: 675px)").matches) {
+			if (deviceTypeByViewport() == 'mobile') {
 				return h(MobileLayout)
 			} else {
 				return h(DesktopLayout)

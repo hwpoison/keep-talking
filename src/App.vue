@@ -1,12 +1,12 @@
 <template> 
   <ReloadPrompt />
-  <div>
-    <router-view v-slot="{ Component }">
-      <keep-alive>
-          <component :is="Component" />
-        </keep-alive>
-    </router-view>
-  </div>
+    <div>
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+      </router-view>
+    </div>
 </template>
 <script>
 import { onMounted } from 'vue'
@@ -24,6 +24,10 @@ export default {
 }
 </script>
 <style>
+html {
+  scroll-behavior: smooth;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -32,30 +36,26 @@ export default {
   color: #2c3e50;
 }
 
-
+/* Slide effect transition */
 .slide-enter-active,
 .slide-leave-active {
   transition: all 0.1s ease-out;
 }
-
 
 .slide-enter-to {
   position: absolute;
   right: 0;
 }
 
-
 .slide-enter-from {
   position: absolute;
   right: -100%;
 }
 
-
 .slide-leave-to {
   position: absolute;
   left: -100%;
 }
-
 
 .slide-leave-from {
   position: absolute;
