@@ -40,8 +40,7 @@ const loadUserDataAndConfiguration = () => {
 const getLastMessage = (contactId) : string => {
   let allMessages = messagesCollection[contactId]
   if(allMessages){
-    console.log(allMessages)
-    let last = allMessages[Math.max(...Object.keys(allMessages))]
+    let last = allMessages[Object.keys(allMessages).splice(-1)]
     return last?last.message:''
   }
 }
@@ -104,19 +103,20 @@ const addNewContact = (contactInfo : Record<string, unknown>) => {
   saveContacts()
 }
 
-const addMessage = (chatId: number, sender: string, msgText: string, user : number = false): void => {
+const addMessage = (chatId: number, sender: string, msgText: string): void => {
   messagesCollection[chatId].push({
     id: messagesCollection[chatId].length,
     message: msgText.trim(),
     from: sender,
   });
-  const currentContact = contacts.list.find(contact=>contact.id==chatId)
+  const currentContact = getContactInfo(chatId)
+  // move chat to top of contact list
   if(currentContact){
     const contactIndex = contacts.list.indexOf(currentContact)
     contacts.list.unshift(contacts.list.splice(contactIndex,1)[0])
   }
   saveContacts()
-  saveHistorial();
+  saveHistorial()
 };
 
 const clearChat = (chatId: number): void => {
