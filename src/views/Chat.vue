@@ -137,10 +137,11 @@
     </div>
 
     <!-- Message input box -->
+      <div v-show='maxMessagesAdvertence'> <span class="font-light" >Se ha llegado al tope de mensajes, se vaciará la caja de mensajes en el proximo envío.</span></div>
     <form
       id="input-form"
       class="flex justify-between bottom-0"
-      @submit.prevent="send()"
+      @submit.prevent="sendMessage()"
       v-show="contactId != null"
     >
       <input
@@ -166,7 +167,10 @@ import {
   getOrCreateChat,
   addMessage,
   clearChat,
+  maxMessages
 } from "../chat.ts"
+
+import { getNLActualDate } from "../utils/date.ts"
 
 import NavBar from "../components/NavBar.vue"
 import Logo from "../components/Logo.vue"
@@ -175,8 +179,6 @@ import UndoButton from "../components/Buttons/UndoButton.vue"
 import CleanButton from "../components/Buttons/CleanButton.vue"
 import RetryButton from "../components/Buttons/RetryButton.vue"
 import KeepTalkButton from "../components/Buttons/KeepTalkButton.vue"
-
-import { deviceType } from "../utils/detectDevice.js"
 
 /* eslint-disable */
 export default {
@@ -217,6 +219,7 @@ export default {
     const userInfo = reactive({})
     const contactInfo = reactive({ img: "", name: "" })
     const inputUserMessage = ref(null)
+    const maxMessagesAdvertence = ref(false)
 
     const isChatEmpty = () => {
       return messages.value.length === 0
@@ -234,17 +237,14 @@ export default {
         return
       }
       deleteLastMessage(contactID.value)
-      send(true)
+      sendMessage(true)
       hideMenu()
     }
 
     // Continue generating conversation
     const keepTalk = () => {
-      if (isChatEmpty()) {
-        hideMenu()
-        return
-      }
-      send(true)
+      if(isChatEmpty() && hideMenu()) return // if chat is empty and menu is hidden, do nothing
+      sendMessage(true)
       hideMenu()
     }
 
@@ -267,36 +267,35 @@ export default {
       showOptionsMenu.value = false
     }
 
-    const getNLActualDate = () => {
-      // natural language full date
-      const date = new Date()
-      let fulldate = date.toLocaleDateString("es-ES", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-      let time = date.toTimeString()
+    const sendMessage = async (trying = false) => {
 
-      return `Hoy es ${fulldate} y son las ${time}\n`
-    }
+      if (!trying) {
+        let prompt = inputUserMessage.value
+        addMessage(contactID.value, userInfo.name, prompt, true)
+        scrollChatToBottom()
+        inputUserMessage.value = ""
+      }
 
-    const send = async (trying = false) => {
-      let newquery = ""
+      // if chat reached max messages, clean it
+      if(maxMessagesAdvertence.value && messages.value.length > maxMessages){
+        cleanChat()
+        maxMessagesAdvertence.value = false
+        return true
+      }
+      if(messages.value.length > maxMessages) {
+        // TODO: add chat summarization
+        maxMessagesAdvertence.value = true
+      }
+
+
       // 1) prepare and generate query
+      let newquery = ""
 
       newquery += getNLActualDate()
       newquery +=
         contactInfo.name + ":" + JSON.stringify(contactInfo.personality) + "\n"
       newquery += contactInfo.context + "\n"
 
-      if (!trying) {
-        let prompt = inputUserMessage.value
-        // add user message to chatbox
-        addMessage(contactID.value, userInfo.name, prompt, true)
-        scrollChatToBottom()
-        inputUserMessage.value = ""
-      }
       /*
           Inject chat style text
             <...conversation context...>
@@ -344,6 +343,8 @@ export default {
         chatStatus.value = "Offline (General Error)"
         console.error("[x] General error")
       }
+
+
     }
 
     const scrollChatToBottom = async () => {
@@ -386,9 +387,10 @@ export default {
       undoMessage,
       chatStatus,
       inputUserMessage,
-      send,
+      sendMessage,
       chatView,
       keepTalk,
+      maxMessagesAdvertence
     }
   },
 }

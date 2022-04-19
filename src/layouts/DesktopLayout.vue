@@ -1,7 +1,7 @@
 <template>
     <div id="desktop-layout">
         <div class="flex flex-row">
-            <div class="relative h-screen" style="width: 32%">
+            <div class="relative h-screen" style="width: 35%">
                 <Contacts
                     ref="contactsView"
                     @selected="selected"

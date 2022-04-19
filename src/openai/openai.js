@@ -1,6 +1,7 @@
 import { reactive } from "vue"
 import OpenAI from "openai-api"
-import { engines } from '../openai/engines.ts'
+
+import * as engines from "../openai/engines.ts"
 
 const OPENAI_API_KEY = "<YOUR API KEY>"
 
@@ -59,7 +60,8 @@ class openaiAPI {
         this.configuration.temperature = userConfig.temperature
       if (userConfig.engine) this.configuration.engine = userConfig.engine
     }else{
-      this.configuration.engine = engines['Davinci Instruct']
+      this.configuration.engine = engines.allEngines[engines.defaultEngine]
+
     }
   }
 

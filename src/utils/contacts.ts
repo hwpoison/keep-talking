@@ -1,4 +1,4 @@
-import { engines } from '../openai/engines'
+import { allEngines } from '../openai/engines'
 
 interface Contact {
   id : number,
@@ -15,7 +15,7 @@ const allContacts : Contact[] = [
     id: 778,
     name: "Dr. Sabelo Todo",
     preferedTemperature: 0.5,
-    preferedEngine: engines['Davinci Instruct'],
+    preferedEngine: allEngines['Davinci Instruct'],
     img: "https://d7lju56vlbdri.cloudfront.net/var/ezwebin_site/storage/images/_aliases/image671_405/media/images/inteligencia-artificial_warner-bros/5972568-1-esl-MX/Inteligencia-Artificial_Warner-Bros.png",
     context:
       "Conversación entre un cliente y Dr. Know, un asistente virtual que tiene todo el conocimiento de la humanidad.",

@@ -14,12 +14,12 @@
         <label class="text-2xl font-light text-gray-500   select-none" for="apikey">Open AI API KEY:</label><br>
         <input v-model="inputApiKey" type="text" id="apikey" name="apikey" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
         
-        <label class="text-2xl font-light text-gray-500   select-none" for="model">Default Model:</label><br>
+        <label class="text-2xl font-light text-gray-500   select-none" for="model">Modelo por defecto:</label><br>
         <select v-model="inputActualEngine" class="font-monospace p-3 w-4/5 h-12 border border-b-4" name="model" id="model">
-            <option v-for='(label, name) in allEngines' :value=label>{{ name }}</option>
+            <option v-for='(label, name, id) in allEngines' :value=label :key=id >{{ name }}</option>
         </select>
         <br>
-        <div v-for="label, name in allEngines">
+        <div v-for="label, name, id in allEngines" :key=id>
         </div>
         <button class="mt-8 object-center transition duration-500 bg-blue-500 hover:bg-blue-400 active:bg-blue-500 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" @click="deleteConversations()">
             Eliminar Conversaciónes
@@ -41,9 +41,9 @@
 import { watchEffect ,ref } from 'vue'
 
 import { openai } from '../openai/openai'
-import { engines } from '../openai/engines'
-
+import { allEngines as engines } from '../openai/engines'
 import { saveUserInfo, getUserInfo, deleteAllConversations, deleteAllContacts, deleteAll } from '../chat'
+
 import NavBar from '../components/NavBar.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 
@@ -106,6 +106,7 @@ export default {
             }
             saveUserInfo()
         })
+        
         return {
             inputUserName,
             inputApiKey,

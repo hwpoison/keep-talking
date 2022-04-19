@@ -1,4 +1,5 @@
 import { reactive } from "vue";
+
 import demoContacts from "./utils/contacts";
 import * as store from "./utils/localStorage";
 
@@ -14,6 +15,9 @@ const getUserInfo = (): Record<string, unknown> => {
   return userInfo;
 };
 
+const maxMessages = 35;
+
+// Load the UserData configuration saved into localStorage
 const loadUserDataAndConfiguration = () => {
   // chat historial
   console.info("[+]Loading user info")
@@ -43,6 +47,14 @@ const getLastMessage = (contactId) : string => {
     let last = allMessages[Object.keys(allMessages).splice(-1)]
     return last?last.message:''
   }
+}
+
+const getChatLength = (contactId: number): number => {
+  let allMessages = messagesCollection[contactId]
+  if(allMessages){
+    return Object.keys(allMessages).length
+  }
+  return 0
 }
 
 const saveHistorial = (): void => {
@@ -137,21 +149,23 @@ const changeUserName = (newName: string): void => {
 };
 
 export {
-  getUserInfo,
   changeUserName,
   messagesCollection,
+  contacts,
   addMessage,
   deleteAllConversations,
-  contacts,
   deleteAllContacts,
   deleteAll,
   clearChat,
   deleteLastMessage,
   getOrCreateChat,
+  getUserInfo,
   getContactInfo,
+  getChatLength,
   getLastMessage,
   addNewContact,
   saveContacts,
   saveUserInfo,
-  loadUserDataAndConfiguration
+  loadUserDataAndConfiguration,
+  maxMessages
 };
