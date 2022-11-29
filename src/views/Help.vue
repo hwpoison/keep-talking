@@ -2,7 +2,7 @@
 <div id="help-view" class="absolute inset-0 flex flex-col">
 	<NavBar :showBackButton=true>
 		<template #navbar-title>
-			<p class="text-2xl font-light justify-self-start mt-6 ml-2">Acerca de Keep Talking<span style="padding-left:1px; font-size:9px" class="absolute" >v1.0</span></p>
+			<p class="text-2xl font-light justify-self-start mt-6 ml-2">Acerca de Keep Talking<span style="padding-left:1px; font-size:9px" class="absolute" >v1.1</span></p>
 		</template>
 	</NavBar>
 		<div class="flex-1 px-2 p-4 overflow-y-scroll">

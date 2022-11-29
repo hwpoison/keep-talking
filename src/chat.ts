@@ -2,9 +2,12 @@ import { reactive } from "vue";
 
 import demoContacts from "./utils/contacts";
 import * as store from "./utils/localStorage";
+import { defaultSettings } from "./global_settings"; "./utils/global_settings"
+
+const maxMessages = defaultSettings.maxMessages
 
 const userInfo = reactive({
-  name: "Usuario"
+  name: defaultSettings.userName
 });
 
 let contacts = reactive({'list':[]})
@@ -15,7 +18,6 @@ const getUserInfo = (): Record<string, unknown> => {
   return userInfo;
 };
 
-const maxMessages = 35;
 
 // Load the UserData configuration saved into localStorage
 const loadUserDataAndConfiguration = () => {

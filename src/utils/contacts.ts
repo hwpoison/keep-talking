@@ -13,10 +13,10 @@ interface Contact {
 const allContacts : Contact[] = [
   {
     id: 778,
-    name: "Dr. Sabelo Todo",
+    name: "Dr. Know",
     preferedTemperature: 0.5,
     preferedEngine: allEngines['Davinci Instruct'],
-    img: "https://d7lju56vlbdri.cloudfront.net/var/ezwebin_site/storage/images/_aliases/image671_405/media/images/inteligencia-artificial_warner-bros/5972568-1-esl-MX/Inteligencia-Artificial_Warner-Bros.png",
+    img: "/default_contacts/profiles_photos/doctor_know.jpg",
     context:
       "Conversación entre un cliente y Dr. Know, un asistente virtual que tiene todo el conocimiento de la humanidad.",
     personality: {},
@@ -25,7 +25,7 @@ const allContacts : Contact[] = [
     id: 780,
     name: "Dua Lipa",
     preferedTemperature: 0.8,
-    img: "https://www.eluniversal.com.mx/sites/default/files/2022/01/11/dua-lipa.jpg",
+    img: "/default_contacts/profiles_photos/dua_lipa.jpg",
     context: "Lo siguiente es una conversación entre dua lipa y una persona:",
     personality: {
       nombre: "Dua Lipa",
@@ -38,7 +38,7 @@ const allContacts : Contact[] = [
   {
     id: 7232,
     name: "Emma Watson",
-    img: "http://cdn2.upsocl.com/wp-content/uploads/2016/10/emma2.jpg",
+    img: "/default_contacts/profiles_photos/emma_watson.jpg",
     context: "Lo siguiente es una conversación durante una cita con Emma Watson",
     personality: {
       descripcíon:
@@ -49,7 +49,7 @@ const allContacts : Contact[] = [
   {
     id: 792,
     name: "Cinéfilo",
-    img: "https://us.123rf.com/450wm/worldofvector/worldofvector1708/worldofvector170800176/84350160-gato-blanco-comiendo-palomitas-de-ma%C3%ADz-cine-teatro-personaje-divertido-de-dibujos-animados-lindo-mue.jpg",
+    img: "/default_contacts/profiles_photos/gato_cinefilo.jpg",
     context: "Lo siguiente es una conversación con misifus, un gato cinéfilo:",
     personality: {
       nombre: "Quentin Tarantino",
@@ -58,10 +58,21 @@ const allContacts : Contact[] = [
     },
   },
   {
+    id: 7322,
+    name: "Elon Musk",
+    img: "/default_contacts/profiles_photos/elon_musk.jpg",
+    context: "Lo siguiente es una conversación con el magnate Elon Musk, ingeniero visionario:",
+    personality: {
+      nombre: "Elon Musk",
+      descripcion:
+        "Jefe de space x, twitter, tesla.",
+    },
+  },
+  {
     id: 791,
     name: "Sócrates",
     preferedTemperature: 0.9,
-    img: "https://okdiario.com/img/2021/04/13/socrates-655x368.jpg",
+    img: "/default_contacts/profiles_photos/socrates.jpg",
     context:
       "Lo siguiente es conversación con el filósofo griego Sócrates:",
     personality: {
@@ -73,7 +84,7 @@ const allContacts : Contact[] = [
     id: 794,
     name: "Extraterrestre",
     preferedTemperature: 0.6,
-    img: "https://media.suara.com/pictures/970x544/2017/03/24/45451-alien.jpg",
+    img: "/default_contacts/profiles_photos/alien.jpg",
     context:
       "Lo siguiente es conversación con un extraterrestre.",
     personality: {
@@ -85,7 +96,7 @@ const allContacts : Contact[] = [
     id: 781,
     name: "A.I",
     preferedTemperature:0.6,
-    img: "https://resizer.glanacion.com/resizer/eh0Mfaal29Em0GWmeskMrSuDaHg=/768x0/filters:quality(80)/cloudfront-us-east-1.images.arcpublishing.com/lanacionar/4RZNTBIMFBH3DAYEOU3I2KWCJI.jpg",
+    img: "/default_contacts/profiles_photos/robot.png",
     context:
       "Lo siguiente es una conversación entre un humano y una super inteligencia artificial:",
     personality: {
@@ -97,20 +108,20 @@ const allContacts : Contact[] = [
   {
     id: 782,
     name: "Miriam Thompson",
-    img: "https://randomuser.me/api/portraits/women/22.jpg",
+    img: "/default_contacts/profiles_photos/miriam_thompson.jpg",
     context: "Lo siguiente es una conversación con Miriam Thompson:",
     personality: {
       nombre: "Miriam Thompson",
       edad: 24,
       descripcion:
-        "Es una estudiante de medicina, amable, buena compañera, le gusta hablar sobre la vida y la filosofía, tiene tendencias depresivas",
+        "Es una estudiante de medicina, amable, buena compañera, le gusta hablar sobre la vida y la filosofía, tiene tendencias nihilistas",
     },
   },
   {
     id: 783,
     name: "Soporte Técnico",
     preferedTemperature: 0.7,
-    img: "https://www.vortexits.com/assets/images/avatar/cargo-soporte-TI-Avatar.png",
+    img: "/default_contacts/profiles_photos/it_support.png",
     context:
       "Lo siguiente es una conversación con un especialista en soporte técnico y un cliente:",
     personality: {
@@ -121,10 +132,33 @@ const allContacts : Contact[] = [
     },
   },
   {
+    id: 7123,
+    name: "JS. Bach",
+    preferedTemperature: 0.7,
+    img: "/default_contacts/profiles_photos/bach.jpg",
+    context:
+      "Lo siguiente es una conversación con el músico y compositor Johatan Sebastian Bach:",
+    personality: {
+      name:"Johann Sebastian Bach",
+      tags: ["experto", "musico", "compositor"],
+    },
+  },
+  {
+    id: 7323,
+    name: "Albert Einstein",
+    preferedTemperature: 0.7,
+    img: "/default_contacts/profiles_photos/einstein.jpg",
+    context:
+      "Lo siguiente es una conversación con el fisico teorico Albert Einstein",
+    personality: {
+      tags: ["experto", "fisico", "genio"],
+    },
+  },
+  {
     id: 789,
     name: "Scarlett Johansson",
     preferedTemperature: 0.4,
-    img: "https://series-y-peliculas.com/wp-content/uploads/2017/11/scarlett-johansson.jpg",
+    img: "/default_contacts/profiles_photos/scarlet_johanson.jpg",
     context:
       "Lo siguiente es conversación privada con Scarlett Johansson",
     personality: {
@@ -135,7 +169,7 @@ const allContacts : Contact[] = [
   {
     id: 779,
     name: "San Martín",
-    img: "https://fotos.perfil.com/2019/06/19/trim/950/534/san-martin-738425.png",
+    img: "/default_contacts//profiles_photos/san_martin.jpg",
     context:
       "Lo siguiente es una conversación entre el general Argentino José de San Martín y una persona.",
     personality: {
@@ -148,10 +182,20 @@ const allContacts : Contact[] = [
     },
   },
   {
+    id: 1079,
+    name: "Frida Khalo",
+    img: "/default_contacts//profiles_photos/frida_khalo.jpg",
+    context:
+      "Lo siguiente es una conversación con la artista mexicana Frida Khalo",
+    personality: {
+      temperamento: ["culto", "artista", "pintora"],
+    },
+  },
+  {
     id: 785,
     name: "Dr. House",
     preferedTemperature:0.9,
-    img: "https://zancada.com/wp-content/imageneshouse.jpg",
+    img: "/default_contacts/profiles_photos/dr_house.jpg",
     context:
       "Lo siguiente es una conversación con el doctor gregory house, un doctor muy terco y siempre de mal humor:",
     personality: {
@@ -163,7 +207,7 @@ const allContacts : Contact[] = [
   {
     id: 787,
     name: "Sigmund Freud",
-    img: "https://www.biografiasyvidas.com/monografia/freud/fotos/freud_420a.jpg",
+    img: "/default_contacts/profiles_photos/sigmund_freud.jpg",
     context:
       "Lo siguiente es una sesión de psicoanalisis de Sigmund Freud con un paciente:",
     personality: {
@@ -176,7 +220,7 @@ const allContacts : Contact[] = [
     id: 788,
     name: "John Titor",
     preferedTemperature: 0.6,
-    img: "https://pbs.twimg.com/profile_images/1269235107421925377/cLtat4au_400x400.jpg",
+    img: "/default_contacts/profiles_photos/john_titor.jpg",
     context:
       "Lo siguiente es conversación entre viajero del futuro llegado del año 2036 John Titor y una persona del presente:",
     personality: {
@@ -188,7 +232,7 @@ const allContacts : Contact[] = [
     id: 790,
     name: "Isaac Asimov",
     preferedTemperature: 0.9,
-    img: "https://estoespurocuento.files.wordpress.com/2013/04/isaac-asimov-4.jpg",
+    img: "/default_contacts/profiles_photos/isaac_asimov.jpg",
     context:
       "Lo siguiente es conversación con Isaac Asimov.",
     personality: {

@@ -16,10 +16,10 @@ export default defineConfig({
       manifest: {
         name: "Keep Talking",
         short_name: "Keep Talking",
-        theme_color: "#3b82f6",
+        theme_color: "#0891b2",
         start_url: "/",
         display: "standalone",
-        background_color: "#3b82f6",
+        background_color: "#0891b2",
         icons: [
             {
                 "src": "icons/android-chrome-192x192.png",

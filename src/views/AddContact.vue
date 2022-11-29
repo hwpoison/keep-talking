@@ -6,7 +6,7 @@
     </template>
   </NavBar> 
   <div v-show="confirmationNotification" class="pt-1 rounded-3 select-none">
-    <div  class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
+    <div  class="bg-cyan-100 border-t border-b border-cyan-500 text-cyan-700 px-4 py-3" role="alert">
       <p class="font-bold">Listo</p>
       <p class="text-sm">El contacto ha sido añadido correctamente</p>
     </div>
@@ -26,7 +26,7 @@
       <label class="text-2xl font-light select-none text-gray-500" for="contact-description">Etiquetas</label><br>
       <input class="border py-3 border-b-4 p-3 placeholder:italic placeholder:text-gray-400 " placeholder="Cualidades o detalles de la persona separadas por coma" v-model="contactInfo.tags" style="width:80%" name="contact-description" required><br><br>
       <div class="mt-4">
-        <button class="mt-3 object-center transition duration-500 bg-blue-500 hover:bg-blue-400 active:bg-blue-500 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
+        <button class="mt-3 object-center transition duration-500 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-500 text-white font-bold py-2 px-4 border-b-4 border-cyan-700 hover:border-cyan-500 rounded">
           Confirmar
         </button> 
       </div>

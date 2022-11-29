@@ -156,6 +156,6 @@ export default {
 }
 
 .menu-btn {
-    @apply p-2 pt-3 md:p-3 rounded transition duration-100 active:bg-blue-400 hover:bg-blue-600 pb-2;
+    @apply p-2 pt-3 md:p-3 rounded transition duration-100 active:bg-cyan-400 hover:bg-cyan-600 pb-2;
 }
 </style>

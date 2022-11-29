@@ -58,27 +58,27 @@
             <div class="flex" v-show="showOptionsMenu">
               <ToClickOutside @click="hideMenu()" />
               <div
-                class="z-20 bg-blue-500 border-2 border-blue-600 dropdown-menu text-white rounded shadow-lg w-40 max-w-xs"
+                class="z-20 bg-cyan-500 border-2 border-cyan-600 dropdown-menu text-white rounded shadow-lg w-40 max-w-xs"
               >
                 <ul class="list-none overflow-hidden rounded">
                   <a
                     @click="undoMessage()"
-                    class="flex py-2 px-3 transition duration-300 hover:bg-blue-400"
+                    class="flex py-2 px-3 transition duration-300 hover:bg-cyan-400"
                     ><UndoButton
                   /></a>
                   <a
                     @click="retryLast()"
-                    class="flex py-2 px-3 transition duration-300 hover:bg-blue-400"
+                    class="flex py-2 px-3 transition duration-300 hover:bg-cyan-400"
                     ><RetryButton
                   /></a>
                   <a
                     @click="keepTalk()"
-                    class="flex py-2 px-2 transition duration-300 hover:bg-blue-400"
+                    class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
                     ><KeepTalkButton
                   /></a>
                   <a
                     @click="cleanChat()"
-                    class="flex py-2 px-2 transition duration-300 hover:bg-blue-400"
+                    class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
                     ><CleanButton
                   /></a>
                 </ul>
@@ -147,7 +147,7 @@
       <input
         ref="userInput"
         v-model="inputUserMessage"
-        class="relative grow transition duration-500 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent py-1 pb-2 px-4 rounded-none"
+        class="relative grow transition duration-500 border border-transparent focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-transparent py-1 pb-2 px-4 rounded-none"
         placeholder="Escribir algo..."
         required
       />
@@ -404,9 +404,9 @@ export default {
 #input-btn {
   @apply text-white font-bold py-2 px-4;
   @apply transition duration-500;
-  @apply bg-blue-500 hover:bg-blue-400;
-  @apply active:bg-blue-500;
-  @apply border-b-4 border-blue-700 hover:border-blue-500 rounded;
+  @apply bg-cyan-700 hover:bg-cyan-800;
+  @apply active:bg-cyan-700;
+  @apply border-b-4 border-cyan-700 hover:border-cyan-800 rounded;
 }
 
 .list-enter-active {
@@ -439,13 +439,13 @@ export default {
   height: 0.25rem;
 }
 
-.scrollbar-track-blue-lighter::-webkit-scrollbar-track {
+.scrollbar-track-cyan-lighter::-webkit-scrollbar-track {
   --bg-opacity: 1;
   background-color: #f7fafc;
   background-color: rgba(247, 250, 252, var(--bg-opacity));
 }
 
-.scrollbar-thumb-blue::-webkit-scrollbar-thumb {
+.scrollbar-thumb-cyan::-webkit-scrollbar-thumb {
   --bg-opacity: 1;
   background-color: #edf2f7;
   background-color: rgba(237, 242, 247, var(--bg-opacity));

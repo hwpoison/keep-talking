@@ -9,7 +9,7 @@
                 />
             </div>
             <div
-                class="relative w-1 h-20 bg-blue-400 resizeur"
+                class="relative w-1 h-20 bg-cyan-600 resizeur"
                 id="resizer"
             ></div>
             <div class="relative flex-1">

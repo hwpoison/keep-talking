@@ -1,7 +1,7 @@
 <template>
     <nav
         id="nav-bar"
-        class="w-full z-10 bg-blue-500 rounded-br border-b-4 border-blue-600 h-20 text-white shadow-md select-none"
+        class="w-full z-10 bg-cyan-600 rounded-br border-b-4 border-cyan-700 h-20 text-white shadow-md select-none"
         :class="{
             'rounded-bl border-l-0': showBackButton == false,
         }"

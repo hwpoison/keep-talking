@@ -21,11 +21,11 @@
         <br>
         <div v-for="label, name, id in allEngines" :key=id>
         </div>
-        <button class="mt-8 object-center transition duration-500 bg-blue-500 hover:bg-blue-400 active:bg-blue-500 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" @click="deleteConversations()">
+        <button class="mt-8 object-center transition duration-500 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-500 text-white font-bold py-2 px-4 border-b-4 border-cyan-700 hover:border-cyan-600 rounded" @click="deleteConversations()">
             Eliminar Conversaciónes
         </button> 
         <br>
-        <button class="mt-1 object-center transition duration-500 bg-blue-500 hover:bg-blue-400 active:bg-blue-500 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" @click="deleteContacts()">
+        <button class="mt-1 object-center transition duration-500 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-500 text-white font-bold py-2 px-4 border-b-4 border-cyan-700 hover:border-cyan-600 rounded" @click="deleteContacts()">
             Eliminar Contactos
         </button> 
         <br>
