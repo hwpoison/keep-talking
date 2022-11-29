@@ -3,7 +3,7 @@ import OpenAI from "openai-api"
 
 import * as engines from "../openai/engines.ts"
 
-const OPENAI_API_KEY = "<YOUR API KEY>"
+const OPENAI_API_KEY = "<YOUR API KEY HERE>"
 
 class openaiAPI {
   constructor() {

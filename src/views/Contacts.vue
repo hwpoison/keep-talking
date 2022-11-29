@@ -38,26 +38,26 @@
         >
             <ul class="grid grid-cols-1 select-none">
                 <!-- contact -->
-                <div v-for="(contact, id) in contact.list" :key="id">
+                <div v-for="(contact_item, id) in contact.list" :key="id">
                     <div
                         class="contact overflow-hidden items-center"
                         :class="{
-                            'contact-selected': selectedContact == contact.id,
+                            'contact-selected': selectedContact == contact_item.id,
                         }"
-                        @click="openChat(contact.id)"
+                        @click="openChat(contact_item.id)"
                     >
                         <div id="contact-image">
                             <img
-                                v-bind="{ src: contact.img, alt: contact.name }"
+                                v-bind="{ src: contact_item.img, alt: contact_item.name }"
                             />
                         </div>
                         <p
                             id="contact-name"
                             class="overflow-hidden mb-1 w-full text-left"
                         >
-                            {{ contact.name }}<br /><span
+                            {{ contact_item.name }}<br /><span
                                 class="italic font-normal text-gray-400 text-lg truncateline"
-                                >{{ getLastMessage(contact.id) }}
+                                >{{ getLastMessage(contact_item.id) }}
                             </span>
                         </p>
                     </div>
