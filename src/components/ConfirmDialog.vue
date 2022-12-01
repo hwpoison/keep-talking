@@ -51,9 +51,9 @@ export default {
     const type = ref('alert')
     
 		const settings = reactive({
-			title: 'Titulo',
-			message: 'Contenido del dialogo',
-      confirmationLabel:"Sí",
+			title: 'Title',
+			message: 'Dialog content',
+      confirmationLabel:"Yes",
       abortLabel:"No",
       onaccept: ()=>{},
       onabort : ()=>{show.value = false}

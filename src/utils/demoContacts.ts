@@ -12,7 +12,7 @@ interface Contact {
 
 const allContacts : Contact[] = [
   {
-    id: 778,
+    id: 1,
     name: "Dr. Know",
     preferedTemperature: 0.5,
     preferedEngine: allEngines['Davinci Instruct'],
@@ -22,7 +22,7 @@ const allContacts : Contact[] = [
     personality: {},
   },
   {
-    id: 780,
+    id: 2,
     name: "Dua Lipa",
     preferedTemperature: 0.8,
     img: "/default_contacts/profiles_photos/dua_lipa.jpg",
@@ -36,7 +36,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 7232,
+    id: 3,
     name: "Emma Watson",
     img: "/default_contacts/profiles_photos/emma_watson.jpg",
     context: "Lo siguiente es una conversación durante una cita con Emma Watson",
@@ -47,7 +47,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 792,
+    id: 4,
     name: "Cinéfilo",
     img: "/default_contacts/profiles_photos/gato_cinefilo.jpg",
     context: "Lo siguiente es una conversación con misifus, un gato cinéfilo:",
@@ -58,18 +58,17 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 7322,
+    id: 5,
     name: "Elon Musk",
     img: "/default_contacts/profiles_photos/elon_musk.jpg",
     context: "Lo siguiente es una conversación con el magnate Elon Musk, ingeniero visionario:",
     personality: {
       nombre: "Elon Musk",
-      descripcion:
-        "Jefe de space x, twitter, tesla.",
+      descripcion:"Jefe de space x, twitter, tesla, es exentrico a mas no poder, divertido y le gusta los memes, también bromear.",
     },
   },
   {
-    id: 791,
+    id: 6,
     name: "Sócrates",
     preferedTemperature: 0.9,
     img: "/default_contacts/profiles_photos/socrates.jpg",
@@ -81,7 +80,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 794,
+    id: 7,
     name: "Extraterrestre",
     preferedTemperature: 0.6,
     img: "/default_contacts/profiles_photos/alien.jpg",
@@ -93,7 +92,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 781,
+    id: 8,
     name: "A.I",
     preferedTemperature:0.6,
     img: "/default_contacts/profiles_photos/robot.png",
@@ -106,7 +105,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 782,
+    id: 9,
     name: "Miriam Thompson",
     img: "/default_contacts/profiles_photos/miriam_thompson.jpg",
     context: "Lo siguiente es una conversación con Miriam Thompson:",
@@ -118,7 +117,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 783,
+    id: 10,
     name: "Soporte Técnico",
     preferedTemperature: 0.7,
     img: "/default_contacts/profiles_photos/it_support.png",
@@ -132,7 +131,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 7123,
+    id: 11,
     name: "JS. Bach",
     preferedTemperature: 0.7,
     img: "/default_contacts/profiles_photos/bach.jpg",
@@ -144,7 +143,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 7323,
+    id: 12,
     name: "Albert Einstein",
     preferedTemperature: 0.7,
     img: "/default_contacts/profiles_photos/einstein.jpg",
@@ -155,7 +154,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 789,
+    id: 13,
     name: "Scarlett Johansson",
     preferedTemperature: 0.4,
     img: "/default_contacts/profiles_photos/scarlet_johanson.jpg",
@@ -167,7 +166,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 779,
+    id: 14,
     name: "San Martín",
     img: "/default_contacts//profiles_photos/san_martin.jpg",
     context:
@@ -182,7 +181,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 1079,
+    id: 15,
     name: "Frida Khalo",
     img: "/default_contacts//profiles_photos/frida_khalo.jpg",
     context:
@@ -192,7 +191,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 785,
+    id: 16,
     name: "Dr. House",
     preferedTemperature:0.9,
     img: "/default_contacts/profiles_photos/dr_house.jpg",
@@ -205,7 +204,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 787,
+    id: 17,
     name: "Sigmund Freud",
     img: "/default_contacts/profiles_photos/sigmund_freud.jpg",
     context:
@@ -217,7 +216,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 788,
+    id: 18,
     name: "John Titor",
     preferedTemperature: 0.6,
     img: "/default_contacts/profiles_photos/john_titor.jpg",
@@ -229,7 +228,7 @@ const allContacts : Contact[] = [
     },
   },
   {
-    id: 790,
+    id: 19,
     name: "Isaac Asimov",
     preferedTemperature: 0.9,
     img: "/default_contacts/profiles_photos/isaac_asimov.jpg",

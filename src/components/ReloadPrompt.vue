@@ -6,7 +6,9 @@
 <script lang="ts">
 import { ref, onMounted } from "vue";
 import { useRegisterSW } from "virtual:pwa-register/vue";
+
 import ConfirmDialog from '../components/ConfirmDialog.vue'
+import { allLabels } from '../language'
 
 const { updateServiceWorker } = useRegisterSW();
 
@@ -33,10 +35,10 @@ export default {
         dialog.value.show = true 
         dialog.value.type = "success"
         let confirmReload = {
-            title:'Novedades!',
-            message: 'Se ha encontrado nuevo contenido disponible.',
-            confirmationLabel:"Recargar",
-            abortLabel:"Cerrar",
+            title: allLabels['updateMessage'],
+            message: allLabels['updateMessage'],
+            confirmationLabel: allLabels['updates'],
+            abortLabel: allLabels['close'],
             onaccept: () => {updateSW();dialog.value.show=false},
             onabort: ()=>{close();dialog.value.show=false}
         }

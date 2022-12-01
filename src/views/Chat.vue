@@ -58,29 +58,34 @@
             <div class="flex" v-show="showOptionsMenu">
               <ToClickOutside @click="hideMenu()" />
               <div
-                class="z-20 bg-cyan-500 border-2 border-cyan-600 dropdown-menu text-white rounded shadow-lg w-40 max-w-xs"
+                class="z-20 bg-cyan-600 border-2 border-cyan-700 dropdown-menu text-white rounded shadow-lg w-40 max-w-xs"
               >
                 <ul class="list-none overflow-hidden rounded">
                   <a
                     @click="undoMessage()"
                     class="flex py-2 px-3 transition duration-300 hover:bg-cyan-400"
                     ><UndoButton
-                  /></a>
+                  > {{ allLabels.undo }}</UndoButton></a>
                   <a
                     @click="retryLast()"
                     class="flex py-2 px-3 transition duration-300 hover:bg-cyan-400"
                     ><RetryButton
-                  /></a>
+                    > {{ allLabels.retry }} </RetryButton> </a>
                   <a
                     @click="keepTalk()"
                     class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
                     ><KeepTalkButton
-                  /></a>
+                  > {{ allLabels.keepTalk }}</KeepTalkButton></a>
                   <a
                     @click="cleanChat()"
                     class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
                     ><CleanButton
-                  /></a>
+                  > {{ allLabels.emptyChat }}</CleanButton></a>
+                  <a
+                    @click="exportChat()"
+                    class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
+                    ><SaveButton
+                  > {{ allLabels.saveToFile }} </SaveButton></a>
                 </ul>
               </div>
             </div>
@@ -91,14 +96,14 @@
     <template v-if="contactId === null">
       <div class="chat justify-evenly">
         <p class="pt-48 text-3xl font-thin font-extralight select-none">
-          👈 Selecciona a alguien y comienza a conversar.
+          👈 {{ allLabels.startToChat }}
         </p>
       </div>
     </template>
     <!-- Chat content -->
     <div
       class="flex-1 bg-gray-200 bg-gradient-to-b overflow-y-scroll from-gray-100"
-      ref="chat"
+      ref="chatBox"
       v-show="contactId != null"
     >
       <div class="chat-message">
@@ -137,7 +142,7 @@
     </div>
 
     <!-- Message input box -->
-      <div v-show='maxMessagesAdvertence'> <span class="font-light" >Se ha llegado al tope de mensajes, se vaciará la caja de mensajes en el proximo envío.</span></div>
+      <div v-show='maxMessagesAdvertence'> <span class="font-light" > {{ allLabels.reachedLimit }}</span></div>
     <form
       id="input-form"
       class="flex justify-between bottom-0"
@@ -151,24 +156,21 @@
         placeholder="Escribir algo..."
         required
       />
-      <button class="flex-none" id="input-btn">Enviar</button>
+      <button class="flex-none" id="input-btn"> {{ allLabels.send }}</button>
     </form>
   </div>
 </template>
 <script>
+
+import exportFile from 'fs-browsers/dist/cjs/export-to-file/exportToFile';
+
 import { nextTick, reactive, ref, onBeforeUpdate, onMounted } from "vue"
 import { useRoute } from "vue-router"
 import { openai } from "../openai/openai.js"
+import settings from '../settingsManager'
 
-import {
-  getUserInfo,
-  deleteLastMessage,
-  getContactInfo,
-  getOrCreateChat,
-  addMessage,
-  clearChat,
-  maxMessages
-} from "../chat.ts"
+import contacts from "../contacts.ts"
+import chat from "../chat.ts"
 
 import { getNLActualDate } from "../utils/date.ts"
 
@@ -179,8 +181,10 @@ import UndoButton from "../components/Buttons/UndoButton.vue"
 import CleanButton from "../components/Buttons/CleanButton.vue"
 import RetryButton from "../components/Buttons/RetryButton.vue"
 import KeepTalkButton from "../components/Buttons/KeepTalkButton.vue"
+import SaveButton from "../components/Buttons/SaveButton.vue"
+import { allLabels  } from "../language";
 
-/* eslint-disable */
+
 export default {
   name: "Chat",
   components: {
@@ -191,7 +195,8 @@ export default {
     CleanButton,
     RetryButton,
     KeepTalkButton,
-  },
+    SaveButton
+},
   props: {
     contactId: {
       type: Number,
@@ -208,10 +213,10 @@ export default {
 
     // refs
     const chatView = ref(null)
-    const chat = ref(null) // chat box reference
+    const chatBox = ref(null) // chat box reference
     const userInput = ref(null) // input box reference
 
-    const chatStatus = ref("Online")
+    const chatStatus = ref(allLabels.online)
     const showOptionsMenu = ref(false)
 
     const contactID = ref(null)
@@ -219,31 +224,32 @@ export default {
     const userInfo = reactive({})
     const contactInfo = reactive({ img: "", name: "" })
     const inputUserMessage = ref(null)
-    const maxMessagesAdvertence = ref(false)
+    const maxMessagesAdvertence = ref(null)
+    const maxMessages = settings.values['maxMessages']
 
-    const isChatEmpty = () => {
+    const isTheChatEmpty = () => {
       return messages.value.length === 0
     }
 
     const cleanChat = () => {
-      clearChat(contactID.value)
+      chat.clearChat(contactID.value)
       showOptionsMenu.value = false
     }
 
     // Retry last message
     const retryLast = () => {
-      if (isChatEmpty()) {
+      if (isTheChatEmpty()) {
         hideMenu()
         return
       }
-      deleteLastMessage(contactID.value)
+      chat.deleteLastMessage(contactID.value)
       sendMessage(true)
       hideMenu()
     }
 
     // Continue generating conversation
     const keepTalk = () => {
-      if(isChatEmpty() && hideMenu()) return // if chat is empty and menu is hidden, do nothing
+      if(isTheChatEmpty() && hideMenu()) return // if chat is empty and menu is hidden, do nothing
       sendMessage(true)
       hideMenu()
     }
@@ -253,16 +259,17 @@ export default {
       userInput.value.focus()
     }
 
-    // delete the last message
+    // undo the last message
     const undoMessage = () => {
-      if (isChatEmpty()) {
+      if (isTheChatEmpty()) {
         hideMenu()
         return
       }
-      deleteLastMessage(contactID.value)
+      chat.deleteLastMessage(contactID.value)
       hideMenu()
     }
 
+    // hide the chat options menu
     const hideMenu = () => {
       showOptionsMenu.value = false
     }
@@ -271,7 +278,7 @@ export default {
 
       if (!trying) {
         let prompt = inputUserMessage.value
-        addMessage(contactID.value, userInfo.name, prompt, true)
+        chat.addMessage(contactID.value, userInfo['userName'], prompt, true, contacts)
         scrollChatToBottom()
         inputUserMessage.value = ""
       }
@@ -314,44 +321,54 @@ export default {
       newquery += contactInfo.name + ":"
 
       // 2) send request
-      chatStatus.value = "Escribiendo..."
+      chatStatus.value = allLabels['writting']
       try {
         const response = await openai.chatGen(
           newquery,
-          userInfo.name,
-          contactInfo.name,
-          contactInfo.preferedEngine,
-          contactInfo.preferedTemperature
+          userInfo['name'],
+          contactInfo['name'],
+          contactInfo['preferedEngine'],
+          contactInfo['preferedTemperature'],
         )
         const generatedResponse = response.data.choices[0].text
-        addMessage(contactID.value, contactInfo.name, generatedResponse)
+        chat.addMessage(contactID.value, contactInfo.name, generatedResponse)
         scrollChatToBottom()
-        chatStatus.value = "Online"
+        chatStatus.value = allLabels['online']
       } catch (error) {
+        console.error(error)
         if (error.response.status == 401) {
           // unauthorized
           //.. handle notification
           console.error("[x]Problem with api key")
           scrollChatToBottom()
         }
-        addMessage(
+        chat.addMessage(
           contactID.value,
           contactInfo.name,
-          "Lo siento, no puedo responderte en este momento."
+          allLabels['denyResponse']
         )
         scrollChatToBottom()
-        chatStatus.value = "Offline (General Error)"
-        console.error("[x] General error")
+        chatStatus.value = allLabels['errorToResponse']
+        console.error("[x] Error to response")
       }
-
-
     }
 
+    // scroll the chat bot to the bottom
     const scrollChatToBottom = async () => {
       await nextTick()
-      chat.value.scrollTop = chat.value.scrollHeight
+      chatBox.value.scrollTop = chatBox.value.scrollHeight
     }
 
+    const exportChat = ()=>{
+      let chatSummary = ""
+      messages.value
+        .map((msg) => {
+          return msg.from + ":" + msg.message
+        })
+        .forEach((x) => (chatSummary += x + "\n"))
+        exportFile(chatSummary, { fileName: `chat_with_${ contactInfo.name }_and_${ userInfo['name'] }_${ Date.now() }_export.txt` });
+        hideMenu()
+      }
     const resetUI = () => {
       hideMenu()
       scrollChatToBottom()
@@ -360,9 +377,9 @@ export default {
     const loadData = () => {
       focusInput()
       contactID.value = props.contactId
-      messages.value = getOrCreateChat(contactID.value)
-      Object.assign(contactInfo, getContactInfo(contactID.value))
-      Object.assign(userInfo, getUserInfo())
+      messages.value = chat.getOrCreateChat(contactID.value)
+      Object.assign(contactInfo, contacts.getContactInfo(contactID.value))
+      Object.assign(userInfo, settings.values['userProfile'])
       resetUI()
     }
 
@@ -375,7 +392,7 @@ export default {
     })
 
     return {
-      chat,
+      chatBox,
       userInput,
       contactInfo,
       messages,
@@ -390,7 +407,9 @@ export default {
       sendMessage,
       chatView,
       keepTalk,
-      maxMessagesAdvertence
+      maxMessagesAdvertence,
+      allLabels,
+      exportChat
     }
   },
 }

@@ -1,5 +1,7 @@
+import { allLabels } from "../language"
+
+// natural language full date
 const getNLActualDate = () => {
-    // natural language full date
     const date = new Date()
     let fulldate = date.toLocaleDateString("es-ES", {
     weekday: "long",
@@ -9,8 +11,7 @@ const getNLActualDate = () => {
     })
     let time = date.toTimeString()
 
-    return `Hoy es ${fulldate} y son las ${time}\n`
+    return `${ allLabels['todayIs'] } ${fulldate} : ${time}\n`
 }
-
 
 export { getNLActualDate }

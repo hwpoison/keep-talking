@@ -5,6 +5,6 @@ const allEngines  : Record<string, string> = {
 	'Curie': 'text-curie-001'
 }
 
-const defaultEngine : string = 'Davinci Instruct'
+const defaultEngine : string = 'Davinci'
 
 export { allEngines , defaultEngine }

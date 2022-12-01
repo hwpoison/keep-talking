@@ -1,16 +1,18 @@
-// VERTICAL RESIZING ( FOR LATERAL PANELS )
+// HORIZONTAL RESIZING ( FOR LATERAL PANELS )
+
+var fixedSize = null
 function makeResizable(elId) {
     const resizer = document.getElementById(elId)
 
     // The current position of mouse
     let x = 0
     let y = 0
-
     // Width of left side
     let leftWidth = 0
 
     const leftSide = resizer.previousElementSibling
     const rightSide = resizer.nextElementSibling
+    fixedSize = fixedSize==null?Number(leftSide.style.width.replace(/[^\d\.\-]/g, '')):fixedSize;
     // Attach the handler
 
     const mouseMoveHandler = function (e) {
@@ -20,7 +22,12 @@ function makeResizable(elId) {
         const newLeftWidth =
             ((leftWidth + dx) * 100) /
             resizer.parentNode.getBoundingClientRect().width
-        leftSide.style.width = `${newLeftWidth}%`
+
+        if(newLeftWidth < fixedSize){
+            console.log("peligro")
+        }else{
+            leftSide.style.width = `${newLeftWidth}%`
+        }
     }
 
     const mouseDownHandler = function (e) {

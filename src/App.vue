@@ -10,7 +10,7 @@
 </template>
 <script>
 import { onMounted } from 'vue'
-import { loadUserDataAndConfiguration } from './chat.ts'
+// import { loadUserDataAndConfiguration } from './chat.ts'
 import ReloadPrompt from './components/ReloadPrompt.vue'
 
 export default {
@@ -18,7 +18,6 @@ export default {
     ReloadPrompt
   },
   setup(){
-    loadUserDataAndConfiguration()
     return {}
   }
 }

@@ -57,7 +57,7 @@
                         >
                             {{ contact_item.name }}<br /><span
                                 class="italic font-normal text-gray-400 text-lg truncateline"
-                                >{{ getLastMessage(contact_item.id) }}
+                                >{{ chat.getLastMessage(contact_item.id) }}
                             </span>
                         </p>
                     </div>
@@ -70,10 +70,10 @@
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 
-import { contacts, getLastMessage } from "../chat"
+import chat from "../chat"
+import contacts from "../contacts"
 
 import NavBar from "../components/NavBar.vue"
-import ConfirmDialog from "../components/ConfirmDialog.vue"
 import Logo from "../components/Logo.vue"
 
 import SettingsButton from "../components/Buttons/SettingsButton.vue"
@@ -125,7 +125,7 @@ export default {
             openHelp,
             contact,
             selectedContact,
-            getLastMessage,
+            chat
         }
     },
 }

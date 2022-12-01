@@ -3,7 +3,7 @@ import OpenAI from "openai-api"
 
 import * as engines from "../openai/engines.ts"
 
-const OPENAI_API_KEY = "<YOUR API KEY HERE>"
+const OPENAI_API_KEY = "<Here you API key>" 
 
 class openaiAPI {
   constructor() {
@@ -52,8 +52,7 @@ class openaiAPI {
   }
 
   loadUserConfiguration() {
-    // get prefered engine
-    // console.log("[+]Loading OpenAI userconfig.")
+    // Get prefered engine
     const userConfig = JSON.parse(localStorage.getItem("openAIConfiguration"))
     if (userConfig) {
       if (userConfig.temperature)
@@ -66,7 +65,6 @@ class openaiAPI {
   }
 
   saveConfiguration() {
-    // console.log("[+]Saving openai userconfig.")
     localStorage.setItem(
       "openAIConfiguration",
       JSON.stringify(this.configuration)

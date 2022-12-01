@@ -15,5 +15,6 @@
     "types":["vite/client", "vite-plugin-pwa/client"],
   },
   "include": ["src/**/*.js", "src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": []
+  "exclude": [],
+
 }

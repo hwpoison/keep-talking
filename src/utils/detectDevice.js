@@ -10,6 +10,6 @@ const deviceType = () => {
 };
 
 const deviceTypeByViewport = () => {
-    return window.matchMedia("(max-width: 675px)").matches?'mobile':'desktop'
+    return window.matchMedia("(max-width: 1240px)").matches?'mobile':'desktop'
 }
 export { deviceType, deviceTypeByViewport }

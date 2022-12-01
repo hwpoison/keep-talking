@@ -2,7 +2,7 @@
 <div id="help-view" class="absolute inset-0 flex flex-col">
 	<NavBar :showBackButton=true>
 		<template #navbar-title>
-			<p class="text-2xl font-light justify-self-start mt-6 ml-2">Acerca de Keep Talking<span style="padding-left:1px; font-size:9px" class="absolute" >v1.1</span></p>
+			<p class="text-2xl font-light justify-self-start mt-6 ml-2"> {{ allLabels.about }}<span style="padding-left:1px; font-size:9px" class="absolute" >v1.2</span></p>
 		</template>
 	</NavBar>
 		<div class="flex-1 px-2 p-4 overflow-y-scroll">
@@ -29,16 +29,23 @@
 			<p class="text-left">Si bien GPT-3 fue entrenado en su mayoría con contenido en inglés, maneja muy bien el español con un gran grado de coherencia.</p>
 			<br><p class="font-light text-left">**Los historiales de chats y configuraciones se guardan localmente en el navegador y nada de lo que escribas queda registrado en ninguna otra parte.</p>
 			<br>Powered by:<a href="https://openai.com">OpenAI</a><br><br>
-			<footer class="text-light">- Created by <a href="https://github.com/hwpoison/keep-talking">hwpoison</a> - 2021 -</footer>
+			<footer class="text-light">- Created by <a href="https://github.com/hwpoison/keep-talking">hwpoison</a> - 2022 -</footer>
 		</div>
 </div>
 </template>
 <script>
 import NavBar from '../components/NavBar.vue'
+import { allLabels } from '../language'
+
 export default {
 	name:'Help',
 	components:{
 		NavBar
+	},
+	setup(){
+		return {
+			allLabels
+		}
 	}
 }
 </script>
