@@ -1,6 +1,6 @@
 const defaultSettings  = {
     maxMessages : 35,
-    lang : "es",
+    lang : "spanish",
     userProfile:{
         userName : "Usuario"
     }

@@ -70,7 +70,7 @@ export default {
         const defaultLang = ref(settings.language.get())
         const dialog = ref(null)
         const allEngines = engines
-        const allLanguages = {"Español":"es", "English":"en"}
+        const allLanguages = {"Español":"spanish", "English":"english"}
         
         const deleteConversations = () : void =>{
             dialog.value.show = true

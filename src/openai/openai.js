@@ -1,5 +1,5 @@
 import { reactive } from "vue"
-import OpenAI from "openai-api"
+import { Configuration, OpenAIApi } from "openai";
 
 import * as engines from "../openai/engines.ts"
 
@@ -12,12 +12,11 @@ class openaiAPI {
       temperature: 0.9,
       engine: "curie"
     }
-    this._openai = new OpenAI(this.apiKey)
+    this.openai = new OpenAIApi(new Configuration({apiKey:this.apiKey}));
   }
 
   setApiKey(key) {
     this.apiKey = key
-    this._openai._api_key = this.apiKey
   }
 
   setEngine(engine) {
@@ -30,20 +29,20 @@ class openaiAPI {
     let selectedTemperature = temperature? temperature:this.configuration.temperature
 
     if (!selectedEngine.includes('text-')) stopwords.push("\n")
-    console.log("=>Input:", prompt, 
+      console.log("=>Input:", prompt, 
       "\n\n=>Engine:", selectedEngine,
       "\n\n=>Temperature:", selectedTemperature)
-      const gptResponse = await this._openai.complete({
-          engine: selectedEngine,
+      
+      const gptResponse = await this.openai.createCompletion({
+          model: selectedEngine,
           prompt: prompt,
-          maxTokens: 150,
+          max_tokens: 150,
           temperature: selectedTemperature, // a number between 0 and 1 that determines how many creative risks the engine takes when generating text.
-          topP: 1,
-          presencePenalty: 0.6, // a number between 0 and 1. The higher this value the model will make a bigger effort in talking about new topics.
-          frequencyPenalty: 0.0, // a number between 0 and 1. The higher this value the model will make a bigger effort in not repeating itself.
-          bestOf: 1,
+          top_p: 1,
+          presence_penalty: 0.6, // a number between 0 and 1. The higher this value the model will make a bigger effort in talking about new topics.
+          frequency_penalty: 0.0, // a number between 0 and 1. The higher this value the model will make a bigger effort in not repeating itself.
+          best_of: 1,
           n: 1,
-          stream: false,
           stop: stopwords,
         })
 

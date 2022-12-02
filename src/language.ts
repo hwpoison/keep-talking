@@ -2,7 +2,7 @@ import settings from './settingsManager'
 import { reactive  } from 'vue'
 
 let messages = {
-    es:{
+    spanish:{
         advertiseMessage:"Advertencia",
         settings:"Configuraciones",
         startToChat:"Selecciona a alguien y comienza a conversar",
@@ -38,9 +38,10 @@ let messages = {
         writting:"Escribiendo...",
         selectLang:"Seleccionar lenguaje",
         todayIs:"Hoy es",
-        saveToFile:"Descargar"
+        saveToFile:"Descargar",
+        generalTalkAsk:"¿Sobre qué te gustaría hablar?"
     },
-    en:{
+    english:{
         advertiseMessage:"Advertence!",
         settings:"Settings",
         startToChat:"Choice someone and start chat!",
@@ -76,7 +77,8 @@ let messages = {
         writting:"Typing...",
         selectLang:"Select lang",
         todayIs:"Today is",
-        saveToFile:"Save"
+        saveToFile:"Save",
+        generalTalkAsk:"What would you like to talk about?"
 
     }
 }

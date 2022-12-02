@@ -168,7 +168,6 @@ import { nextTick, reactive, ref, onBeforeUpdate, onMounted } from "vue"
 import { useRoute } from "vue-router"
 import { openai } from "../openai/openai.js"
 import settings from '../settingsManager'
-
 import contacts from "../contacts.ts"
 import chat from "../chat.ts"
 
@@ -182,7 +181,7 @@ import CleanButton from "../components/Buttons/CleanButton.vue"
 import RetryButton from "../components/Buttons/RetryButton.vue"
 import KeepTalkButton from "../components/Buttons/KeepTalkButton.vue"
 import SaveButton from "../components/Buttons/SaveButton.vue"
-import { allLabels  } from "../language";
+import { allLabels, getLang } from "../language";
 
 
 export default {
@@ -273,6 +272,16 @@ export default {
     const hideMenu = () => {
       showOptionsMenu.value = false
     }
+    const generateInitialPrompt = (contactInfo) => {
+      let prompt = "Conversation entirely in "+ getLang()  +"with " + contactInfo.name + "\n"
+      prompt+= contactInfo.name + ":" + contactInfo.context + "\n";
+      if (contactInfo.hasOwnProperty('customAsk')) {
+        prompt += contactInfo.customAsk + "\n";
+      } else {
+        prompt += allLabels['generalTalkAsk'] + "\n";
+      }
+      return prompt;
+    }
 
     const sendMessage = async (trying = false) => {
 
@@ -297,11 +306,8 @@ export default {
 
       // 1) prepare and generate query
       let newquery = ""
-
       newquery += getNLActualDate()
-      newquery +=
-        contactInfo.name + ":" + JSON.stringify(contactInfo.personality) + "\n"
-      newquery += contactInfo.context + "\n"
+      newquery += generateInitialPrompt(contactInfo)
 
       /*
           Inject chat style text
@@ -366,7 +372,8 @@ export default {
           return msg.from + ":" + msg.message
         })
         .forEach((x) => (chatSummary += x + "\n"))
-        exportFile(chatSummary, { fileName: `chat_with_${ contactInfo.name }_and_${ userInfo['name'] }_${ Date.now() }_export.txt` });
+        console.log(userInfo)
+        exportFile(chatSummary, { fileName: `Chat_with_${ contactInfo.name }_and_${ userInfo['userName'] }_${ Date.now() }_export.txt` });
         hideMenu()
       }
     const resetUI = () => {
