@@ -14,17 +14,11 @@ class Contacts {
       // contact list
       console.info("[+] Loading contacts")
       const storeContacts = store.read("contacts");
-      this.list.value = storeContacts
-      if (storeContacts != null){
-        this.list.value = storeContacts
-      }
-      if(this.getList().length == 0){
-        this.list.value = demoContacts
-      }
+      this.list.value = storeContacts==null?[]:storeContacts
     }
     
-    reloadDemoContacts(){
-      Object.assign(this.list.value, demoContacts)
+    loadDemoContacts(){
+      contacts.list.value = demoContacts
     }
     
     deleteAllContacts(): void {
@@ -49,6 +43,11 @@ class Contacts {
 }
 
 const contacts = new Contacts()
+
 contacts.loadFromStore()
+
+// Force demo contacts load
+if(contacts.list.value.length == 0)
+  contacts.loadDemoContacts()
 
 export default contacts;
