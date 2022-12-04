@@ -1,7 +1,7 @@
 import { ref, reactive } from "vue";
-import * as store from "./utils/localStorage";
+import * as store from "../utils/localStorage";
 
-import demoContacts from "./utils/demoContacts";
+import demoContacts from "../utils/demoContacts";
 
 class Contacts {
     list = ref([])
@@ -14,13 +14,17 @@ class Contacts {
       // contact list
       console.info("[+] Loading contacts")
       const storeContacts = store.read("contacts");
+      this.list.value = storeContacts
       if (storeContacts != null){
         this.list.value = storeContacts
       }
       if(this.getList().length == 0){
         this.list.value = demoContacts
-        // Object.assign(contacts.list, demoContacts)
       }
+    }
+    
+    reloadDemoContacts(){
+      Object.assign(this.list.value, demoContacts)
     }
     
     deleteAllContacts(): void {
@@ -41,7 +45,7 @@ class Contacts {
     getContactInfo(contactId: number): Record<string, unknown> {
       const info = this.list.value.find((contact) => contact.id == contactId);
       if (info) return info;
-    };
+    }
 }
 
 const contacts = new Contacts()

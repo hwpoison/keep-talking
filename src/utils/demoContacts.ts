@@ -6,7 +6,7 @@ interface Contact {
   preferedEngine?: string,
   preferedTemperature?: number,
   img?: string,
-  context?: string,
+  context: string,
   customAsk?:string
 }
 
@@ -22,19 +22,22 @@ const allContacts : Contact[] = [
   {
     id: 2,
     name: "Dua Lipa",
-    preferedTemperature: 0.4,
+    preferedTemperature: 0.8,
+    preferedEngine: allEngines["Davinci"],
     img: "/default_contacts/profiles_photos/dua_lipa.jpg",
-    context:"¿Qué tal estás? ¡Me encanta tu estilo!" 
+    context:"¡Me encanta tu estilo!" 
   },
   {
     id: 3,
     name: "Emma Watson",
+    preferedTemperature: 0.6,
     img: "/default_contacts/profiles_photos/emma_watson.jpg",
-    context:"¡Hola! ¿Qué has estado haciendo últimamente?" 
+    context:"Soy la actriz Emma Watson" 
   },
   {
     id: 4,
     name: "Cinéfilo",
+    preferedEngine:allEngines["Davinci Instruct"],
     img: "/default_contacts/profiles_photos/gato_cinefilo.jpg",
     context: "¿Sabes lo que creo que es más importante en el cine? La historia"
   },

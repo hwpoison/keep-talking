@@ -1,4 +1,4 @@
-import { allLabels } from "../language"
+import { text } from "../services/language"
 
 // natural language full date
 const getNLActualDate = () => {
@@ -11,7 +11,7 @@ const getNLActualDate = () => {
     })
     let time = date.toTimeString()
 
-    return `${ allLabels['todayIs'] } ${fulldate} : ${time}\n`
+    return `${ text['todayIs'] } ${fulldate} : ${time}\n`
 }
 
 export { getNLActualDate }

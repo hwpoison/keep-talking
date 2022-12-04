@@ -70,8 +70,8 @@
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 
-import chat from "../chat"
-import contacts from "../contacts"
+import chat from "../services/chat"
+import contacts from "../services/contacts"
 
 import NavBar from "../components/NavBar.vue"
 import Logo from "../components/Logo.vue"

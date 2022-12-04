@@ -1,9 +1,10 @@
 <script>
 // Switch between Mobile and Desktop View
 import { h, resolveComponent } from "vue"
+import { deviceTypeByViewport } from '../utils/detectDevice.js'
+
 import Contacts from "../views/Contacts.vue"
 import DesktopLayout from "../layouts/DesktopLayout.vue"
-import { deviceTypeByViewport } from '../utils/detectDevice.js'
 
 export default {
 	components: {

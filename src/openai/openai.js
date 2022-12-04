@@ -3,13 +3,13 @@ import { Configuration, OpenAIApi } from "openai";
 
 import * as engines from "../openai/engines.ts"
 
-const OPENAI_API_KEY = "<Here you API key>" 
+const OPENAI_API_KEY = "<YOUR API KEY>"
 
 class openaiAPI {
   constructor() {
     this.apiKey = OPENAI_API_KEY
     this.configuration = {
-      temperature: 0.9,
+      temperature: 0.7,
       engine: "curie"
     }
     this.openai = new OpenAIApi(new Configuration({apiKey:this.apiKey}));

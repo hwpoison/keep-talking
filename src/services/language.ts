@@ -1,4 +1,4 @@
-import settings from './settingsManager'
+import settings from './settings'
 import { reactive  } from 'vue'
 
 let messages = {
@@ -83,16 +83,16 @@ let messages = {
     }
 }
 
-let allLabels = reactive({})
+let text = reactive({})
 
 const setLang = (lang : string)=> {
-    Object.assign(allLabels, messages[settings.language.get()] );
+    Object.assign(text, messages[lang]);
 }
 
 const getLang = ()=>{
     return settings.language.get()
 }
 
-setLang(settings.values['lang'])
+setLang(getLang())
 
-export { allLabels, setLang, getLang }
+export { text, setLang, getLang }

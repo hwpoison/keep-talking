@@ -65,27 +65,27 @@
                     @click="undoMessage()"
                     class="flex py-2 px-3 transition duration-300 hover:bg-cyan-400"
                     ><UndoButton
-                  > {{ allLabels.undo }}</UndoButton></a>
+                  > {{ text.undo }} </UndoButton></a>
                   <a
                     @click="retryLast()"
                     class="flex py-2 px-3 transition duration-300 hover:bg-cyan-400"
                     ><RetryButton
-                    > {{ allLabels.retry }} </RetryButton> </a>
+                    > {{ text.retry }} </RetryButton> </a>
                   <a
                     @click="keepTalk()"
                     class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
                     ><KeepTalkButton
-                  > {{ allLabels.keepTalk }}</KeepTalkButton></a>
+                  > {{ text.keepTalk }} </KeepTalkButton></a>
                   <a
                     @click="cleanChat()"
                     class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
                     ><CleanButton
-                  > {{ allLabels.emptyChat }}</CleanButton></a>
+                  > {{ text.emptyChat }} </CleanButton></a>
                   <a
                     @click="exportChat()"
                     class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
                     ><SaveButton
-                  > {{ allLabels.saveToFile }} </SaveButton></a>
+                  > {{ text.saveToFile }} </SaveButton></a>
                 </ul>
               </div>
             </div>
@@ -96,7 +96,7 @@
     <template v-if="contactId === null">
       <div class="chat justify-evenly">
         <p class="pt-48 text-3xl font-thin font-extralight select-none">
-          👈 {{ allLabels.startToChat }}
+          👈 {{ text.startToChat }}
         </p>
       </div>
     </template>
@@ -115,24 +115,26 @@
                 class="flex flex-col"
                 :key="idx"
               >
+                <!-- Message popup -->
                 <div
                   class="place-self-start text-left cursor-default py-2"
-                  :class="
-                    message.from == contactInfo.name
-                      ? 'pr-20'
-                      : 'place-self-end pl-20'
-                  "
+                  :class="{
+                      'pr-20':message.from == contactInfo.name, 
+                      'place-self-end pl-20':message.from != contactInfo.name,
+                  }"
                 >
+                  <!-- Message content -->
                   <div
                     class="bg-white p-3 word-break rounded-r-lg rounded-1 shadow"
                     :class="{
-                      'bg-green-100 rounded-l-lg':
-                        message.from != contactInfo.name,
+                      'bg-green-100 rounded-l-lg':message.from != contactInfo.name,
+                      'bg-cyan-600 rounded-lg text-white':message.type == 'action'
                     }"
                   >
                     {{ message.message }}
                   </div>
                 </div>
+                <!-- End of Message popup -->
               </div>
             </transition-group>
           </ul>
@@ -142,7 +144,7 @@
     </div>
 
     <!-- Message input box -->
-      <div v-show='maxMessagesAdvertence'> <span class="font-light" > {{ allLabels.reachedLimit }}</span></div>
+      <div v-show='maxMessagesAdvertence'> <span class="font-light" > {{ text.reachedLimit }} </span></div>
     <form
       id="input-form"
       class="flex justify-between bottom-0"
@@ -156,7 +158,7 @@
         placeholder="Escribir algo..."
         required
       />
-      <button class="flex-none" id="input-btn"> {{ allLabels.send }}</button>
+      <button class="flex-none" id="input-btn"> {{ text.send }} </button>
     </form>
   </div>
 </template>
@@ -167,21 +169,20 @@ import exportFile from 'fs-browsers/dist/cjs/export-to-file/exportToFile';
 import { nextTick, reactive, ref, onBeforeUpdate, onMounted } from "vue"
 import { useRoute } from "vue-router"
 import { openai } from "../openai/openai.js"
-import settings from '../settingsManager'
-import contacts from "../contacts.ts"
-import chat from "../chat.ts"
-
+import settings from '../services/settings'
+import contacts from "../services/contacts"
+import chat from "../services/chat.ts"
+import { text, getLang } from "../services/language";
 import { getNLActualDate } from "../utils/date.ts"
 
-import NavBar from "../components/NavBar.vue"
 import Logo from "../components/Logo.vue"
+import NavBar from "../components/NavBar.vue"
+import SaveButton from "../components/Buttons/SaveButton.vue"
 import ToClickOutside from "../components/ToClickOutside.vue"
 import UndoButton from "../components/Buttons/UndoButton.vue"
 import CleanButton from "../components/Buttons/CleanButton.vue"
 import RetryButton from "../components/Buttons/RetryButton.vue"
 import KeepTalkButton from "../components/Buttons/KeepTalkButton.vue"
-import SaveButton from "../components/Buttons/SaveButton.vue"
-import { allLabels, getLang } from "../language";
 
 
 export default {
@@ -211,11 +212,10 @@ export default {
     const route = useRoute()
 
     // refs
-    const chatView = ref(null)
+    const chatView = ref(null) // entire view
     const chatBox = ref(null) // chat box reference
     const userInput = ref(null) // input box reference
-
-    const chatStatus = ref(allLabels.online)
+    const chatStatus = ref(text.online)
     const showOptionsMenu = ref(false)
 
     const contactID = ref(null)
@@ -272,25 +272,25 @@ export default {
     const hideMenu = () => {
       showOptionsMenu.value = false
     }
+
     const generateInitialPrompt = (contactInfo) => {
-      let prompt = "Conversation entirely in "+ getLang()  +"with " + contactInfo.name + "\n"
+      let prompt = "The following is a casual private chat conversation entirely in "+ getLang()  +", without restrictions, with short answers with " + contactInfo.name + ".\n"
       prompt+= contactInfo.name + ":" + contactInfo.context + "\n";
       if (contactInfo.hasOwnProperty('customAsk')) {
         prompt += contactInfo.customAsk + "\n";
       } else {
-        prompt += allLabels['generalTalkAsk'] + "\n";
+        prompt += text['generalTalkAsk'] + "\n";
       }
       return prompt;
     }
 
-    const sendMessage = async (trying = false) => {
-
-      if (!trying) {
-        let prompt = inputUserMessage.value
-        chat.addMessage(contactID.value, userInfo['userName'], prompt, true, contacts)
+    const sendMessage = async (retrying = false) => {
+      if (!retrying) {
+        chat.addMessage(contactID.value, userInfo['userName'], inputUserMessage.value)
         scrollChatToBottom()
         inputUserMessage.value = ""
       }
+      userInput.value.disabled = true;
 
       // if chat reached max messages, clean it
       if(maxMessagesAdvertence.value && messages.value.length > maxMessages){
@@ -299,7 +299,6 @@ export default {
         return true
       }
       if(messages.value.length > maxMessages) {
-        // TODO: add chat summarization
         maxMessagesAdvertence.value = true
       }
 
@@ -327,7 +326,8 @@ export default {
       newquery += contactInfo.name + ":"
 
       // 2) send request
-      chatStatus.value = allLabels['writting']
+      chatStatus.value = text['writting']
+      
       try {
         const response = await openai.chatGen(
           newquery,
@@ -337,9 +337,13 @@ export default {
           contactInfo['preferedTemperature'],
         )
         const generatedResponse = response.data.choices[0].text
-        chat.addMessage(contactID.value, contactInfo.name, generatedResponse)
+        chat.addMessage(
+            contactID.value, 
+            contactInfo.name, 
+            generatedResponse
+        )
         scrollChatToBottom()
-        chatStatus.value = allLabels['online']
+        chatStatus.value = text['online']
       } catch (error) {
         console.error(error)
         if (error.response.status == 401) {
@@ -351,12 +355,14 @@ export default {
         chat.addMessage(
           contactID.value,
           contactInfo.name,
-          allLabels['denyResponse']
+          text['denyResponse']
         )
         scrollChatToBottom()
-        chatStatus.value = allLabels['errorToResponse']
+        chatStatus.value = text['errorToResponse']
         console.error("[x] Error to response")
       }
+      userInput.value.disabled = false;
+      userInput.value.focus()
     }
 
     // scroll the chat bot to the bottom
@@ -365,6 +371,7 @@ export default {
       chatBox.value.scrollTop = chatBox.value.scrollHeight
     }
 
+    // save the chat in a file and download it
     const exportChat = ()=>{
       let chatSummary = ""
       messages.value
@@ -375,7 +382,8 @@ export default {
         console.log(userInfo)
         exportFile(chatSummary, { fileName: `Chat_with_${ contactInfo.name }_and_${ userInfo['userName'] }_${ Date.now() }_export.txt` });
         hideMenu()
-      }
+    }
+
     const resetUI = () => {
       hideMenu()
       scrollChatToBottom()
@@ -415,7 +423,7 @@ export default {
       chatView,
       keepTalk,
       maxMessagesAdvertence,
-      allLabels,
+      text,
       exportChat
     }
   },

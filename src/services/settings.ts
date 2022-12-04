@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
-import * as store from "./utils/localStorage";
-import defaultSettings from "./utils/defaultSettings";
-import { allLabels, setLang }  from './language'
+import * as store from "../utils/localStorage";
+import defaultSettings from "../utils/defaultSettings";
+import { setLang }  from '../services/language'
 
 
 class SettingsManager {
@@ -47,7 +47,6 @@ class SettingsManager {
         },
         set:(lang : string)=>{
             this.values['lang'] = lang
-            setLang(lang)
         }
     }
 }

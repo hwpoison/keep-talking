@@ -9,8 +9,6 @@
     </div>
 </template>
 <script>
-import { onMounted } from 'vue'
-// import { loadUserDataAndConfiguration } from './chat.ts'
 import ReloadPrompt from './components/ReloadPrompt.vue'
 
 export default {

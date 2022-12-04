@@ -8,9 +8,11 @@ import { ref, onMounted } from "vue";
 import { useRegisterSW } from "virtual:pwa-register/vue";
 
 import ConfirmDialog from '../components/ConfirmDialog.vue'
-import { allLabels } from '../language'
-
 const { updateServiceWorker } = useRegisterSW();
+import chat from '../services/chat'
+import contacts from '../services/contacts'
+import { text } from '../services/language'
+
 
 export default {
   name: "ReloadPrompt",
@@ -27,6 +29,11 @@ export default {
     }
 
     const updateSW = async () : Promise<void> => {
+      chat.deleteAllConversations()
+      contacts.deleteAllContacts()
+      chat.saveHistory()
+      contacts.saveList()
+
       await updateServiceWorker();
     }
 
@@ -35,10 +42,10 @@ export default {
         dialog.value.show = true 
         dialog.value.type = "success"
         let confirmReload = {
-            title: allLabels['updateMessage'],
-            message: allLabels['updateMessage'],
-            confirmationLabel: allLabels['updates'],
-            abortLabel: allLabels['close'],
+            title: text['updateMessage'],
+            message: text['updateMessage'],
+            confirmationLabel: text['confirm'],
+            abortLabel: text['close'],
             onaccept: () => {updateSW();dialog.value.show=false},
             onabort: ()=>{close();dialog.value.show=false}
         }

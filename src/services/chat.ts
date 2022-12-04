@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import * as store from "./utils/localStorage";
+import * as store from "../utils/localStorage";
 import contacts from "./contacts"
 
 const clearArray = (array) => {
@@ -76,6 +76,7 @@ class Chat {
       id: this.messagesCollection[chatId].length,
       message: msgText.trim(),
       from: sender,
+      type:msgText[0] === '*' && msgText[msgText.length - 1] === '*'?'action':'normal'
     });
     const currentContact = this.contacts.getContactInfo(chatId)
   
