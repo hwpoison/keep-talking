@@ -48,7 +48,7 @@ import { watchEffect , ref } from 'vue'
 
 import { openai } from '../openai/openai'
 import { allEngines as engines } from '../openai/engines'
-import { text } from "../services/language";
+import { setLang, text } from "../services/language";
 
 import chat from '../services/chat'
 import contacts from '../services/contacts'
@@ -113,7 +113,7 @@ export default {
         watchEffect(()=>{
             openai.setApiKey(inputApiKey.value)
             openai.saveConfiguration()
-            settings.language.set(defaultLang.value)
+            setLang(defaultLang.value)
         })
         
         watchEffect(()=>{

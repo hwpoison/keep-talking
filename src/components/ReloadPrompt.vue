@@ -6,12 +6,14 @@
 <script lang="ts">
 import { ref, onMounted } from "vue";
 import { useRegisterSW } from "virtual:pwa-register/vue";
+const { updateServiceWorker } = useRegisterSW();
 
 import ConfirmDialog from '../components/ConfirmDialog.vue'
-const { updateServiceWorker } = useRegisterSW();
+
 import chat from '../services/chat'
 import contacts from '../services/contacts'
 import { text } from '../services/language'
+
 
 
 export default {

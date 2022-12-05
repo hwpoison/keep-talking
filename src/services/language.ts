@@ -39,7 +39,8 @@ let messages = {
         selectLang:"Seleccionar lenguaje",
         todayIs:"Hoy es",
         saveToFile:"Descargar",
-        generalTalkAsk:"¿Sobre qué te gustaría hablar?"
+        generalTalkAsk:"¿Sobre qué te gustaría hablar?",
+        name:"Nombre"
     },
     english:{
         advertiseMessage:"Advertence!",
@@ -78,7 +79,8 @@ let messages = {
         selectLang:"Select lang",
         todayIs:"Today is",
         saveToFile:"Save",
-        generalTalkAsk:"What would you like to talk about?"
+        generalTalkAsk:"What would you like to talk about?",
+        name:"Name"
 
     }
 }

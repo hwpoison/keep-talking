@@ -66,6 +66,7 @@ export default {
       contacts.createContact(newContact)
       confirmationNotification.value = true
       contactInfo.value.name = '' // re
+      contactInfo.value.description = ''
     }
 
     return {

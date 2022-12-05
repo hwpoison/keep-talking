@@ -153,9 +153,10 @@
     >
       <input
         ref="userInput"
-        v-model="inputUserMessage"
+        v-model="inputMessage"
         class="relative grow transition duration-500 border border-transparent focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-transparent py-1 pb-2 px-4 rounded-none"
-        placeholder="Escribir algo..."
+        :placeholder=text.writeSomething
+        maxlength="250"
         required
       />
       <button class="flex-none" id="input-btn"> {{ text.send }} </button>
@@ -209,20 +210,19 @@ export default {
   },
   // eslint-disable-next-line
   setup(props) {
-    const route = useRoute()
-
-    // refs
     const chatView = ref(null) // entire view
     const chatBox = ref(null) // chat box reference
-    const userInput = ref(null) // input box reference
     const chatStatus = ref(text.online)
+    const userInput = ref(null) // input box reference
+    const inputMessage = ref(null)
     const showOptionsMenu = ref(false)
 
-    const contactID = ref(null)
-    const messages = ref(null)
     const userInfo = reactive({})
+
+    const contactID = ref(null)
     const contactInfo = reactive({ img: "", name: "" })
-    const inputUserMessage = ref(null)
+
+    const messages = ref(null)
     const maxMessagesAdvertence = ref(null)
     const maxMessages = settings.values['maxMessages']
 
@@ -286,9 +286,9 @@ export default {
 
     const sendMessage = async (retrying = false) => {
       if (!retrying) {
-        chat.addMessage(contactID.value, userInfo['userName'], inputUserMessage.value)
+        chat.addMessage(contactID.value, userInfo['userName'], inputMessage.value)
         scrollChatToBottom()
-        inputUserMessage.value = ""
+        inputMessage.value = ""
       }
       userInput.value.disabled = true;
 
@@ -326,7 +326,7 @@ export default {
       newquery += contactInfo.name + ":"
 
       // 2) send request
-      chatStatus.value = text['writting']
+      chatStatus.value = text.writting
       
       try {
         const response = await openai.chatGen(
@@ -418,7 +418,7 @@ export default {
       retryLast,
       undoMessage,
       chatStatus,
-      inputUserMessage,
+      inputMessage,
       sendMessage,
       chatView,
       keepTalk,
