@@ -1,6 +1,6 @@
 # Keep Talking
 App for emulating chatting with fake people, created with VUE3 and powered by GPT-3 by openAI.
-Wroking demo: https://keep-talking.netlify.app/
+working demo: https://keep-talking.netlify.app/
 
 <div style="inline">
   <img src="https://i.ibb.co/gMTG5z5/a23ed4e7-a058-4eb3-9181-a21109dbf1d5.jpg" width="310" height="550">
