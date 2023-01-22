@@ -3,8 +3,8 @@ import { Configuration, OpenAIApi } from "openai";
 
 import * as engines from "../openai/engines.ts"
 
-// const OPENAI_API_KEY = "<YOUR API KEY>"
-const OPENAI_API_KEY = "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"
+const OPENAI_API_KEY = "<YOUR API KEY>"
+
 class openaiAPI {
   constructor() {
     this.apiKey = OPENAI_API_KEY
