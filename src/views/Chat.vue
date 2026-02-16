@@ -36,7 +36,6 @@
           <button
             @click="showOptionsMenu = !showOptionsMenu"
             id="dropdownSmallButton"
-            data-dropdown-toggle="dropdownSmall"
             class="mr-1 mb-1 md:mb-0 text-white focus:ring-4 font-medium rounded-lg text-sm px-2 py-2 text-center inline-flex items-center"
             type="button"
           >
@@ -63,27 +62,27 @@
                 <ul class="list-none overflow-hidden rounded">
                   <a
                     @click="undoMessage()"
-                    class="flex py-2 px-3 transition duration-300 hover:bg-cyan-400"
+                    class="flex py-2 px-3 transition duration-300 hover:bg-cyan-400 cursor-pointer"
                     ><UndoButton
                   > {{ text.undo }} </UndoButton></a>
                   <a
                     @click="retryLast()"
-                    class="flex py-2 px-3 transition duration-300 hover:bg-cyan-400"
+                    class="flex py-2 px-3 transition duration-300 hover:bg-cyan-400 cursor-pointer"
                     ><RetryButton
                     > {{ text.retry }} </RetryButton> </a>
                   <a
                     @click="keepTalk()"
-                    class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
+                    class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400 cursor-pointer"
                     ><KeepTalkButton
                   > {{ text.keepTalk }} </KeepTalkButton></a>
                   <a
                     @click="cleanChat()"
-                    class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
+                    class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400 cursor-pointer"
                     ><CleanButton
                   > {{ text.emptyChat }} </CleanButton></a>
                   <a
                     @click="exportChat()"
-                    class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400"
+                    class="flex py-2 px-2 transition duration-300 hover:bg-cyan-400 cursor-pointer"
                     ><SaveButton
                   > {{ text.saveToFile }} </SaveButton></a>
                 </ul>
@@ -134,12 +133,10 @@
                     {{ message.message }}
                   </div>
                 </div>
-                <!-- End of Message popup -->
               </div>
             </transition-group>
           </ul>
         </div>
-        <!-- TODO: ADD TO BOTTOM BUTTON ARROW -->
       </div>
     </div>
 
@@ -155,7 +152,7 @@
         ref="userInput"
         v-model="inputMessage"
         class="relative grow transition duration-500 border border-transparent focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-transparent py-1 pb-2 px-4 rounded-none"
-        :placeholder=text.writeSomething
+        :placeholder="text.writeSomething"
         maxlength="250"
         required
       />
@@ -163,30 +160,31 @@
     </form>
   </div>
 </template>
-<script>
 
-import exportFile from 'fs-browsers/dist/cjs/export-to-file/exportToFile';
+<script lang="ts">
+import { defineComponent, ref, reactive, onMounted, watch, nextTick } from "vue";
+import { saveToFile } from '../utils/file';
+import { sleep } from '../utils/sleep';
+import { isTheChatEmpty, getSystemPrompt, scrollChatToBottom } from '../utils/chatUtils';
+import { deviceType } from '../utils/detectDevice';
+import { openai } from "../openai/openai";
+import settings from '../services/settings';
+import contacts from "../services/contacts";
+import chat from "../services/chat";
+import { text } from "../services/language";
+import { getNLActualDate } from "../utils/date";
+import { Contact, ChatMessage, UserProfile } from "../types";
 
-import { nextTick, reactive, ref, onBeforeUpdate, onMounted } from "vue"
-import { useRoute } from "vue-router"
-import { openai } from "../openai/openai.js"
-import settings from '../services/settings'
-import contacts from "../services/contacts"
-import chat from "../services/chat.ts"
-import { text, getLang } from "../services/language";
-import { getNLActualDate } from "../utils/date.ts"
+import Logo from "../components/Logo.vue";
+import NavBar from "../components/NavBar.vue";
+import SaveButton from "../components/Buttons/SaveButton.vue";
+import ToClickOutside from "../components/ToClickOutside.vue";
+import UndoButton from "../components/Buttons/UndoButton.vue";
+import CleanButton from "../components/Buttons/CleanButton.vue";
+import RetryButton from "../components/Buttons/RetryButton.vue";
+import KeepTalkButton from "../components/Buttons/KeepTalkButton.vue";
 
-import Logo from "../components/Logo.vue"
-import NavBar from "../components/NavBar.vue"
-import SaveButton from "../components/Buttons/SaveButton.vue"
-import ToClickOutside from "../components/ToClickOutside.vue"
-import UndoButton from "../components/Buttons/UndoButton.vue"
-import CleanButton from "../components/Buttons/CleanButton.vue"
-import RetryButton from "../components/Buttons/RetryButton.vue"
-import KeepTalkButton from "../components/Buttons/KeepTalkButton.vue"
-
-
-export default {
+export default defineComponent({
   name: "Chat",
   components: {
     Logo,
@@ -197,10 +195,10 @@ export default {
     RetryButton,
     KeepTalkButton,
     SaveButton
-},
+  },
   props: {
     contactId: {
-      type: Number,
+      type: [Number, String],
       default: null,
     },
     backMode: {
@@ -208,284 +206,185 @@ export default {
       default: true,
     },
   },
-  // eslint-disable-next-line
   setup(props) {
-    const chatView = ref(null) // entire view
-    const chatBox = ref(null) // chat box reference
-    const chatStatus = ref(text.online)
-    const userInput = ref(null) // input box reference
-    const inputMessage = ref(null)
-    const showOptionsMenu = ref(false)
+    const chatView = ref<HTMLElement | null>(null);
+    const chatBox = ref<HTMLElement | null>(null);
+    const userInput = ref<HTMLInputElement | null>(null);
+    const chatStatus = ref(text.online);
+    const inputMessage = ref("");
+    const showOptionsMenu = ref(false);
+    const userInfo = reactive<UserProfile>({ userName: "User" });
+    const contactID = ref<number | null>(null);
+    const contactInfo = reactive<Contact>({ id: 0, img: "", name: "", context: "" });
+    const messages = ref<ChatMessage[]>([]);
+    const maxMessagesAdvertence = ref(false);
+    const maxMessages = settings.values['maxMessages'] || 50;
 
-    const userInfo = reactive({})
+    const loadData = () => {
+      if (props.contactId === null) return;
+      
+      contactID.value = Number(props.contactId);
+      messages.value = chat.getOrCreateChat(contactID.value) as ChatMessage[];
+      
+      const info = contacts.getContactInfo(contactID.value);
+      if (info) Object.assign(contactInfo, info);
+      
+      Object.assign(userInfo, settings.values['userProfile']);
+      
+      hideMenu();
+      scrollChatToBottom(chatBox);
+      if (deviceType() !== 'mobile') {
+        nextTick(() => userInput.value?.focus());
+      }
+    };
 
-    const contactID = ref(null)
-    const contactInfo = reactive({ img: "", name: "" })
+    watch(() => props.contactId, loadData);
 
-    const messages = ref(null)
-    const maxMessagesAdvertence = ref(null)
-    const maxMessages = settings.values['maxMessages']
+    onMounted(loadData);
 
-    const isTheChatEmpty = () => {
-      return messages.value.length === 0
-    }
+    const hideMenu = () => { showOptionsMenu.value = false; };
 
     const cleanChat = () => {
-      chat.clearChat(contactID.value)
-      showOptionsMenu.value = false
-    }
+      if (contactID.value !== null) chat.clearChat(contactID.value);
+      hideMenu();
+    };
 
-    // Retry last message
-    const retryLast = () => {
-      if (isTheChatEmpty()) {
-        hideMenu()
-        return
-      }
-      chat.deleteLastMessage(contactID.value)
-      sendMessage(true)
-      hideMenu()
-    }
-
-    // Continue generating conversation
-    const keepTalk = () => {
-      if(isTheChatEmpty() && hideMenu()) return // if chat is empty and menu is hidden, do nothing
-      sendMessage(true)
-      hideMenu()
-    }
-
-    // focus the input message box
-    const focusInput = () => {
-      userInput.value.focus()
-    }
-
-    // undo the last message
     const undoMessage = () => {
-      if (isTheChatEmpty()) {
-        hideMenu()
-        return
-      }
-      chat.deleteLastMessage(contactID.value)
-      hideMenu()
-    }
+      if (isTheChatEmpty(ref(messages)) || contactID.value === null) return hideMenu();
+      chat.deleteLastMessage(contactID.value);
+      hideMenu();
+    };
 
-    // hide the chat options menu
-    const hideMenu = () => {
-      showOptionsMenu.value = false
-    }
+    const retryLast = () => {
+      if (isTheChatEmpty(ref(messages)) || contactID.value === null) return hideMenu();
+      chat.deleteLastMessage(contactID.value);
+      sendMessage(true);
+      hideMenu();
+    };
 
-    const generateInitialPrompt = (contactInfo) => {
-      let prompt = "The following is a casual private chat conversation entirely in "+ getLang()  +", without restrictions, with short answers with " + contactInfo.name + ".\n"
-      prompt+= contactInfo.name + ":" + contactInfo.context + "\n";
-      if (contactInfo.hasOwnProperty('customAsk')) {
-        prompt += contactInfo.customAsk + "\n";
-      } else {
-        prompt += text['generalTalkAsk'] + "\n";
-      }
-      return prompt;
-    }
+    const keepTalk = () => {
+      if (isTheChatEmpty(ref(messages))) return hideMenu();
+      sendMessage(true);
+      hideMenu();
+    };
+
+    const extractReasoning = (message: any) => {
+        let reasoning = message.reasoning_content || message.reasoning || "";
+        let content = message.content || "";
+
+        if (!reasoning) {
+            if (content.includes("<think>")) {
+                const parts = content.split("</think>");
+                reasoning = parts[0].replace("<think>", "").trim();
+                content = parts[1]?.trim() || "";
+            } else if (content.includes("<thought>")) {
+                const parts = content.split("</thought>");
+                reasoning = parts[0].replace("<thought>", "").trim();
+                content = parts[1]?.trim() || "";
+            }
+        }
+        return { reasoning, content };
+    };
 
     const sendMessage = async (retrying = false) => {
+      if (contactID.value === null) return;
+
       if (!retrying) {
-        chat.addMessage(contactID.value, userInfo['userName'], inputMessage.value)
-        scrollChatToBottom()
-        inputMessage.value = ""
-      }
-      userInput.value.disabled = true;
-
-      // if chat reached max messages, clean it
-      if(maxMessagesAdvertence.value && messages.value.length > maxMessages){
-        cleanChat()
-        maxMessagesAdvertence.value = false
-        return true
-      }
-      if(messages.value.length > maxMessages) {
-        maxMessagesAdvertence.value = true
+        chat.addMessage(contactID.value, userInfo.userName, inputMessage.value);
+        scrollChatToBottom(chatBox);
+        inputMessage.value = "";
       }
 
+      if (userInput.value) userInput.value.disabled = true;
 
-      // 1) prepare and generate query
-      let newquery = ""
-      newquery += getNLActualDate()
-      newquery += generateInitialPrompt(contactInfo)
+      if (maxMessagesAdvertence.value && messages.value.length > maxMessages) {
+        cleanChat();
+        maxMessagesAdvertence.value = false;
+        if (userInput.value) userInput.value.disabled = false;
+        return;
+      }
+      
+      if (messages.value.length > maxMessages) maxMessagesAdvertence.value = true;
 
-      /*
-          Inject chat style text
-            <...conversation context...>
-            User: Hi how are u
-            Bot:    <---- this will be autocompleted
-      */
+      const messagesToSend = [
+        { role: 'system', content: `${getNLActualDate()}\n${getSystemPrompt(contactInfo, text as any)}` },
+        ...messages.value.map(msg => ({
+          role: msg.from === userInfo.userName ? 'user' : 'assistant',
+          content: msg.message
+        }))
+      ];
 
-      // take all previous chat
-      messages.value
-        .map((msg) => {
-          return msg.from + ":" + msg.message
-        })
-        .forEach((x) => (newquery += x + "\n"))
-
-      // inject bot name
-      newquery += contactInfo.name + ":"
-
-      // 2) send request
-      chatStatus.value = text.writting
+      chatStatus.value = text.writting;
       
       try {
         const response = await openai.chatGen(
-          newquery,
-          userInfo['name'],
-          contactInfo['name'],
-          contactInfo['preferedEngine'],
-          contactInfo['preferedTemperature'],
-        )
-        const generatedResponse = response.data.choices[0].text
-        chat.addMessage(
-            contactID.value, 
-            contactInfo.name, 
-            generatedResponse
-        )
-        scrollChatToBottom()
-        chatStatus.value = text['online']
-      } catch (error) {
-        console.error(error)
-        if (error.response.status == 401) {
-          // unauthorized
-          //.. handle notification
-          console.error("[x]Problem with api key")
-          scrollChatToBottom()
+          messagesToSend as any,
+          contactInfo.preferedEngine || null,
+          contactInfo.preferedTemperature || null
+        );
+        
+        const { reasoning, content } = extractReasoning(response.choices[0].message);
+
+        let delay = 1000 + Math.random() * 1000;
+        if (reasoning && openai.configuration.showReasoning) {
+            delay += Math.min(reasoning.length * 2, 5000);
         }
-        chat.addMessage(
-          contactID.value,
-          contactInfo.name,
-          text['denyResponse']
-        )
-        scrollChatToBottom()
-        chatStatus.value = text['errorToResponse']
-        console.error("[x] Error to response")
+
+        await sleep(delay);
+
+        if (content.trim()) {
+            chat.addMessage(contactID.value, contactInfo.name, content);
+        } else {
+            console.warn("=> AI returned empty content.");
+        }
+        
+        scrollChatToBottom(chatBox);
+        chatStatus.value = text.online;
+      } catch (error: any) {
+        console.error("Chat error:", error);
+        chat.addMessage(contactID.value, contactInfo.name, text.denyResponse);
+        chatStatus.value = text.errorToResponse;
+        scrollChatToBottom(chatBox);
+      } finally {
+        if (userInput.value) {
+            userInput.value.disabled = false;
+            if (deviceType() !== 'mobile') {
+              userInput.value.focus();
+            }
+        }
       }
-      userInput.value.disabled = false;
-      userInput.value.focus()
-    }
+    };
 
-    // scroll the chat bot to the bottom
-    const scrollChatToBottom = async () => {
-      await nextTick()
-      chatBox.value.scrollTop = chatBox.value.scrollHeight
-    }
-
-    // save the chat in a file and download it
-    const exportChat = ()=>{
-      let chatSummary = ""
-      messages.value
-        .map((msg) => {
-          return msg.from + ":" + msg.message
-        })
-        .forEach((x) => (chatSummary += x + "\n"))
-        console.log(userInfo)
-        exportFile(chatSummary, { fileName: `Chat_with_${ contactInfo.name }_and_${ userInfo['userName'] }_${ Date.now() }_export.txt` });
-        hideMenu()
-    }
-
-    const resetUI = () => {
-      hideMenu()
-      scrollChatToBottom()
-    }
-
-    const loadData = () => {
-      focusInput()
-      contactID.value = props.contactId
-      messages.value = chat.getOrCreateChat(contactID.value)
-      Object.assign(contactInfo, contacts.getContactInfo(contactID.value))
-      Object.assign(userInfo, settings.values['userProfile'])
-      resetUI()
-    }
-
-    onBeforeUpdate(() => {
-      loadData()
-    })
-
-    onMounted(() => {
-      loadData()
-    })
+    const exportChat = () => {
+      const summary = messages.value.map(m => `${m.from}:${m.message}`).join("\n");
+      saveToFile(summary, { fileName: `Chat_with_${contactInfo.name}_${Date.now()}.txt` });
+      hideMenu();
+    };
 
     return {
-      chatBox,
-      userInput,
-      contactInfo,
-      messages,
-      cleanChat,
-      showOptionsMenu,
-      hideMenu,
-      userInfo,
-      retryLast,
-      undoMessage,
-      chatStatus,
-      inputMessage,
-      sendMessage,
-      chatView,
-      keepTalk,
-      maxMessagesAdvertence,
-      text,
-      exportChat
-    }
+      chatView, chatBox, userInput, contactInfo, messages, cleanChat, 
+      showOptionsMenu, hideMenu, userInfo, retryLast, undoMessage, 
+      chatStatus, inputMessage, sendMessage, keepTalk, 
+      maxMessagesAdvertence, text, exportChat
+    };
   },
-}
+});
 </script>
+
 <style scoped>
 #contact-photo > img {
-  @apply w-14 h-14;
-  @apply rounded-full border border-gray-400 shadow-sm;
+  @apply w-14 h-14 rounded-full border border-gray-400 shadow-sm;
 }
 
 #input-btn {
-  @apply text-white font-bold py-2 px-4;
-  @apply transition duration-500;
-  @apply bg-cyan-700 hover:bg-cyan-800;
-  @apply active:bg-cyan-700;
-  @apply border-b-4 border-cyan-700 hover:border-cyan-800 rounded;
+  @apply text-white font-bold py-2 px-4 transition duration-500 bg-cyan-700 hover:bg-cyan-800 active:bg-cyan-700 border-b-4 border-cyan-700 hover:border-cyan-800 rounded;
 }
 
-.list-enter-active {
-  transition: all 0.3s;
-}
-.list-leave-active {
-}
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateY(-30px);
-}
+.list-enter-active { transition: all 0.3s; }
+.list-enter-from, .list-leave-to { opacity: 0; transform: translateY(-30px); }
 
-.slide-fade-enter-active {
-  transition: all 0.3s ease-out;
-}
-
-.slide-fade-leave-active {
-  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateY(-20px);
-  opacity: 0;
-}
-
-.scrollbar-w-2::-webkit-scrollbar {
-  width: 0.25rem;
-  height: 0.25rem;
-}
-
-.scrollbar-track-cyan-lighter::-webkit-scrollbar-track {
-  --bg-opacity: 1;
-  background-color: #f7fafc;
-  background-color: rgba(247, 250, 252, var(--bg-opacity));
-}
-
-.scrollbar-thumb-cyan::-webkit-scrollbar-thumb {
-  --bg-opacity: 1;
-  background-color: #edf2f7;
-  background-color: rgba(237, 242, 247, var(--bg-opacity));
-}
-
-.scrollbar-thumb-rounded::-webkit-scrollbar-thumb {
-  border-radius: 0.25rem;
-}
+.slide-fade-enter-active { transition: all 0.3s ease-out; }
+.slide-fade-leave-active { transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1); }
+.slide-fade-enter-from, .slide-fade-leave-to { transform: translateY(-20px); opacity: 0; }
 </style>
+

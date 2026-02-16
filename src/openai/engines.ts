@@ -1,10 +1,9 @@
-const allEngines  : Record<string, string> = {
-	'Davinci': 'davinci',
-	'Davinci Instruct': 'text-davinci-003',
-	'Ada': 'text-ada-001',
-	'Curie': 'text-curie-001'
+const allEngines: Record<string, string> = {
+	'GPT-4o': 'gpt-4o',
+	'GPT-4 Turbo': 'gpt-4-turbo',
+	'GPT-3.5 Turbo': 'gpt-3.5-turbo'
 }
 
-const defaultEngine : string = 'Davinci Instruct'
+const defaultEngine: string = 'GPT-3.5 Turbo'
 
-export { allEngines , defaultEngine }
+export { allEngines, defaultEngine }

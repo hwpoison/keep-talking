@@ -1,106 +1,103 @@
 import { reactive } from "vue";
 import * as store from "../utils/localStorage";
-import contacts from "./contacts"
+import contacts from "./contacts";
+import { ChatMessage, Contact } from "../types";
 
-const clearArray = (array) => {
-  array.splice(0, array.length)
-}
+const clearArray = (array: any[]) => {
+  array.splice(0, array.length);
+};
 
-// Empties an object
-const clearObject = (object) => {
-  Object.entries(object).forEach(idx=>{
-    clearArray(object[idx[0]])
-  })
-}
+const clearObject = (object: Record<string, any[]>) => {
+  Object.keys(object).forEach(key => {
+    clearArray(object[key]);
+  });
+};
 
 class Chat {
-  messagesCollection = reactive({});
-  contacts = null 
-  constructor(agenda){
-    this.contacts = agenda
+  messagesCollection: Record<number, ChatMessage[]> = reactive({});
+  contacts: any;
+
+  constructor(agenda: any) {
+    this.contacts = agenda;
   }
 
-    // chat historial
-  loadFromStore(){
+  loadFromStore() {
     const storechatHistory = store.read("chatHistory");
-    if (storechatHistory != null) {
+    if (storechatHistory) {
       Object.assign(this.messagesCollection, storechatHistory);
     }
   }
 
-  // Get the last message
-  getLastMessage(contactId : number) : string {
-    let allMessages = this.messagesCollection[contactId]
-    if(allMessages){
-      let last = allMessages[Object.keys(allMessages).splice(-1)]
-      return last?last.message:''
+  getLastMessage(contactId: number): string {
+    const allMessages = this.messagesCollection[contactId];
+    if (allMessages && allMessages.length > 0) {
+      return allMessages[allMessages.length - 1].message || '';
     }
+    return '';
   }
 
-  // Get amount of messages
   getLength(contactId: number): number {
-    let allMessages = this.messagesCollection[contactId]
-    if(allMessages){
-      return Object.keys(allMessages).length
-    }
-    return 0
+    return this.messagesCollection[contactId]?.length || 0;
   }
 
-  // Clear chat with specific contact
   clearChat(chatId: number): void {
-    clearArray(this.messagesCollection[chatId])
+    if (this.messagesCollection[chatId]) {
+      clearArray(this.messagesCollection[chatId]);
+      this.saveHistory();
+    }
+  }
+
+  deleteAllConversations(): void {
+    clearObject(this.messagesCollection);
     this.saveHistory();
-  };
-
-
-  // Delete all conversations of all contacts
-  deleteAllConversations() : void {
-    clearObject(this.messagesCollection)
-    this.saveHistory() // save clear collection
     console.log("[+] All conversations deleted!");
   }
 
-  getOrCreateChat(chatId: number): Record<string, unknown> {
-    if (!this.messagesCollection[chatId]) this.messagesCollection[chatId] = [];
+  getOrCreateChat(chatId: number): ChatMessage[] {
+    if (!this.messagesCollection[chatId]) {
+      this.messagesCollection[chatId] = [];
+    }
     return this.messagesCollection[chatId];
-  };
+  }
 
-  // Save chat history into store
-  saveHistory() : void {
+  saveHistory(): void {
     store.write("chatHistory", this.messagesCollection);
   }
 
   addMessage(chatId: number, sender: string, msgText: string): void {
-    // push Message into the chat
-    this.messagesCollection[chatId].push({
-      id: this.messagesCollection[chatId].length,
+    const chat = this.getOrCreateChat(chatId);
+
+    chat.push({
+      id: chat.length,
       message: msgText.trim(),
       from: sender,
-      type:msgText[0] === '*' && msgText[msgText.length - 1] === '*'?'action':'normal'
+      type: msgText.startsWith('*') && msgText.endsWith('*') ? 'action' : 'normal'
     });
-    const currentContact = this.contacts.getContactInfo(chatId)
-  
-    // Move chat to top of contact list
-    if(currentContact){
-      const contactIndex = this.contacts.getList().indexOf(currentContact)
-      // swap actual top chat
-      this.contacts.getList().unshift(this.contacts.getList().splice(contactIndex,1)[0]) 
+
+    const currentContact = this.contacts.getContactInfo(chatId) as Contact;
+
+    if (currentContact) {
+      const contactList = this.contacts.getList() as Contact[];
+      const contactIndex = contactList.indexOf(currentContact);
+      if (contactIndex > -1) {
+        contactList.unshift(contactList.splice(contactIndex, 1)[0]);
+      }
     }
-    this.contacts.saveList()
-    this.saveHistory()
-  };
+    this.contacts.saveList();
+    this.saveHistory();
+  }
 
   deleteLastMessage(chatId: number): void {
     const chat = this.messagesCollection[chatId];
-    if (chat) {
-      this.messagesCollection[chatId].pop(chat.length);
+    if (chat && chat.length > 0) {
+      chat.pop();
+      this.saveHistory();
     }
-    this.saveHistory();
-  };
-  
+  }
 }
 
-const chat = new Chat(contacts)
-chat.loadFromStore()
+const chat = new Chat(contacts);
+chat.loadFromStore();
 
 export default chat;
+

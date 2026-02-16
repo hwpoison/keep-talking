@@ -3,61 +3,62 @@
     <ConfirmDialog ref="dialog"></ConfirmDialog>
   </div>
 </template>
-<script lang="ts">
-import { ref, onMounted } from "vue";
+
+<script setup lang="ts">
+import { ref, onMounted, nextTick } from "vue";
 import { useRegisterSW } from "virtual:pwa-register/vue";
-const { updateServiceWorker } = useRegisterSW();
-
 import ConfirmDialog from '../components/ConfirmDialog.vue'
-
 import chat from '../services/chat'
 import contacts from '../services/contacts'
 import { text } from '../services/language'
 
+const dialog = ref<any>(null)
+const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW();
 
+const close = async (): Promise<void> => {
+  offlineReady.value = false;
+  needRefresh.value = false;
+}
 
-export default {
-  name: "ReloadPrompt",
-  components:{
-    ConfirmDialog
-  },
-  setup() {
-    const dialog = ref(null)
-    const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW();
+const updateSW = async (): Promise<void> => {
+  chat.deleteAllConversations()
+  contacts.deleteAllContacts()
+  chat.saveHistory()
+  contacts.saveList()
 
-    const close = async () : Promise<void> => {
-      offlineReady.value = false;
-      needRefresh.value = false;
-    }
+  await updateServiceWorker();
+}
 
-    const updateSW = async () : Promise<void> => {
-      chat.deleteAllConversations()
-      contacts.deleteAllContacts()
-      chat.saveHistory()
-      contacts.saveList()
-
-      await updateServiceWorker();
-    }
-
-    const check = () : void => {
-      if(offlineReady || needRefresh ){
-        dialog.value.show = true 
-        dialog.value.type = "success"
-        let confirmReload = {
-            title: text['updateMessage'],
-            message: text['updateMessage'],
-            confirmationLabel: text['confirm'],
-            abortLabel: text['close'],
-            onaccept: () => {updateSW();dialog.value.show=false},
-            onabort: ()=>{close();dialog.value.show=false}
+const check = async (): Promise<void> => {
+  if (offlineReady.value || needRefresh.value) {
+    // Wait for the dialog to be rendered because of the v-if
+    await nextTick();
+    
+    if (dialog.value) {
+      dialog.value.type = "success"
+      const confirmReload = {
+        title: (text as any)['updateMessage'],
+        message: (text as any)['updateMessage'],
+        confirmationLabel: (text as any)['confirm'],
+        abortLabel: (text as any)['close'],
+        onaccept: () => {
+          updateSW();
+          if (dialog.value) dialog.value.show = false;
+        },
+        onabort: () => {
+          close();
+          if (dialog.value) dialog.value.show = false;
         }
-        Object.assign(dialog.value.settings, confirmReload)
       }
+      Object.assign(dialog.value.settings, confirmReload)
+      dialog.value.show = true
     }
-
-    onMounted(()=>{setTimeout(()=>{check()},2000)})
-
-    return { offlineReady, needRefresh, updateServiceWorker, close, dialog };
   }
 }
+
+onMounted(() => {
+  setTimeout(() => {
+    check()
+  }, 2000)
+})
 </script>

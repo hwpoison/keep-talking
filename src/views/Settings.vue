@@ -1,153 +1,145 @@
 <template>
 <div class="absolute inset-0 flex flex-col">
-    <NavBar :showBackButton=true>
+    <NavBar :showBackButton="true">
         <template #navbar-title>
-            <p class="text-2xl font-light justify-self-start ml-2 pt-6">{{ text['settings'] }}</p>
+            <p class="text-2xl font-light justify-self-start ml-2 pt-6">{{ text.settings }}</p>
         </template>
     </NavBar>
     <ConfirmDialog ref="dialog"></ConfirmDialog>
-    <!--<p style="color:red"> Provisory Settings </p>-->
     <div class="flex-1 pt-2 overflow-y-scroll">
-        <label class="text-2xl font-light text-gray-500 select-none" for="username">{{ text['user'] }}:</label><br>
+        <label class="text-2xl font-light text-gray-500 select-none" for="username">{{ text.user }}:</label><br>
         <input v-model="inputUserName" type="text" id="username" name="username" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
 
-        <label class="text-2xl font-light text-gray-500   select-none" for="apikey">{{ text['openAIKey'] }}:</label><br>
+        <label class="text-2xl font-light text-gray-500 select-none" for="apikey">{{ text.openAIKey }}:</label><br>
         <input v-model="inputApiKey" type="text" id="apikey" name="apikey" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
         
-        <label class="text-2xl font-light text-gray-500   select-none" for="model">{{ text['defaultModel'] }}</label><br>
-        <select v-model="inputActualEngine" class="font-monospace p-3 w-4/5 h-12 border border-b-4" name="model" id="model">
-            <option v-for='(label, name, id) in allEngines' :value=label :key=id >{{ name }}</option>
-        </select>
-        <br>
-        <br>
-        <label class="text-2xl font-light text-gray-500   select-none" for="model"> {{ text['selectLang'] }}</label><br>
+        <label class="text-2xl font-light text-gray-500 select-none" for="baseurl">API Endpoint:</label><br>
+        <input v-model="inputBaseURL" type="text" id="baseurl" name="baseurl" class="font-monospace p-3 w-4/5 h-12 border border-b-4" placeholder="https://api.openai.com/v1"><br><br>
+        
+        <label class="text-2xl font-light text-gray-500 select-none" for="model">{{ text.defaultModel }}</label><br>
+        <input v-model="inputActualEngine" list="engines-list" class="font-monospace p-3 w-4/5 h-12 border border-b-4" name="model" id="model" placeholder="gpt-4o">
+        <datalist id="engines-list">
+            <option v-for="(label, name) in allEngines" :value="label" :key="label">{{ name }}</option>
+        </datalist>
+        <br><br>
+        
+        <label class="text-2xl font-light text-gray-500 select-none" for="lang">{{ text.selectLang }}</label><br>
         <select v-model="defaultLang" class="font-monospace p-3 w-4/5 h-12 border border-b-4" name="lang" id="lang">
-            <option v-for='(label, lang, id) in allLanguages' :value=label :key=id >{{ lang }}</option>
+            <option v-for="(val, label) in allLanguages" :value="val" :key="val">{{ label }}</option>
         </select>
         <br>
-        <div v-for="label, name, id in allEngines" :key=id>
+        
+        <div class="mt-4 flex items-center justify-center">
+            <input v-model="inputShowReasoning" type="checkbox" id="reasoning" class="mr-2 h-6 w-6">
+            <label class="text-2xl font-light text-gray-500 select-none" for="reasoning">{{ text.reasoningSupport }}</label>
         </div>
-        <button class="mt-8 object-center transition duration-500 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-500 text-white font-bold py-2 px-4 border-b-4 border-cyan-700 hover:border-cyan-600 rounded" @click="deleteConversations()">
-            {{ text['deleteAllChats'] }}
-        </button> 
         <br>
-        <button class="mt-1 object-center transition duration-500 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-500 text-white font-bold py-2 px-4 border-b-4 border-cyan-700 hover:border-cyan-600 rounded" @click="deleteContacts()">
-            {{ text['deleteAllContacts'] }}
-        </button> 
-        <br>
-        <button class="mt-1 object-center transition duration-500 bg-red-500 hover:bg-red-400 active:bg-red-500 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded" @click="deleteAllConfiguration()">
-            {{ text['deleteAll'] }}
-        </button> 
-        <br>
-        <br>
+        
+        <div class="flex flex-col gap-2 items-center">
+            <button class="transition duration-500 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-500 text-white font-bold py-2 px-4 border-b-4 border-cyan-700 hover:border-cyan-600 rounded w-64" @click="deleteConversations()">
+                {{ text.deleteAllChats }}
+            </button> 
+            <button class="transition duration-500 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-500 text-white font-bold py-2 px-4 border-b-4 border-cyan-700 hover:border-cyan-600 rounded w-64" @click="deleteContacts()">
+                {{ text.deleteAllContacts }}
+            </button> 
+            <button class="transition duration-500 bg-red-500 hover:bg-red-400 active:bg-red-500 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded w-64" @click="deleteAllConfiguration()">
+                {{ text.deleteAll }}
+            </button> 
+        </div>
+        <br><br>
     </div>
 </div>
 </template>
+
 <script lang="ts">
-import { watchEffect , ref } from 'vue'
-
-import { openai } from '../openai/openai'
-import { allEngines as engines } from '../openai/engines'
+import { defineComponent, ref, watchEffect } from 'vue';
+import { openai } from '../openai/openai';
+import { allEngines as engines } from '../openai/engines';
 import { setLang, text } from "../services/language";
+import chat from '../services/chat';
+import contacts from '../services/contacts';
+import settings from '../services/settings';
+import NavBar from '../components/NavBar.vue';
+import ConfirmDialog from '../components/ConfirmDialog.vue';
 
-import chat from '../services/chat'
-import contacts from '../services/contacts'
-import settings from '../services/settings'
-
-import NavBar from '../components/NavBar.vue'
-import ConfirmDialog from '../components/ConfirmDialog.vue'
-
-export default {
-    name:'Settings',
-    components:{
+export default defineComponent({
+    name: 'Settings',
+    components: {
         NavBar,
         ConfirmDialog
     },
-    setup(){
-        const inputApiKey = ref(openai.apiKey)
-        const inputActualEngine = ref(openai.configuration.engine)
-        const inputUserName = ref(settings.userName.get())
-        const defaultLang = ref(settings.language.get())
-        const dialog = ref(null)
-        const allEngines = engines
-        const allLanguages = {"Español":"spanish", "English":"english"}
+    setup() {
+        const inputApiKey = ref(openai.apiKey);
+        const inputBaseURL = ref(openai.baseURL || '');
+        const inputActualEngine = ref(openai.configuration.engine);
+        const inputShowReasoning = ref(openai.configuration.showReasoning);
+        const inputUserName = ref(settings.userName.get());
+        const defaultLang = ref(settings.language.get());
+        const dialog = ref<any>(null);
         
-        const deleteConversations = () : void =>{
-            dialog.value.show = true
-            let confirmDeletion = {
-                title:'¿Eliminar Conversaciónes?',
-                message: 'Todas las conversaciones serán eliminadas.',
-                onaccept: () => {chat.deleteAllConversations();dialog.value.show=false}
-            }
-            Object.assign(dialog.value.settings, confirmDeletion)
-        }
-
-        const deleteContacts = () : void => {
-            dialog.value.show = true
-            let confirmDeletion = {
-                title:'¿Eliminar contactos?',
-                message: 'Todos los contactos serán eliminados.',
-                onaccept: () => {contacts.deleteAllContacts();dialog.value.show=false}
-            }
-            Object.assign(dialog.value.settings, confirmDeletion)
-        }
-
-        const deleteAllConfiguration = () : void => {
-            dialog.value.show = true
-            let confirmDeletion = {
-                title:'¿Eliminar toda la configuración?',
-                message: 'Toda la configuración será eliminada, incluido contactos e historiales.',
+        const allEngines = engines;
+        const allLanguages = { "Español": "spanish", "English": "english" };
+        
+        const deleteConversations = (): void => {
+            dialog.value.show = true;
+            dialog.value.settings = {
+                title: text.deleteAllChats,
+                message: text.deleteAllChats, // Generic message
                 onaccept: () => {
-                    // Delete all configurations
-                    console.log("All deleted!");
-                    chat.deleteAllConversations()
-                    contacts.deleteAllContacts()
-                    chat.saveHistory()
-                    contacts.saveList()
-                    dialog.value.show=false
+                    chat.deleteAllConversations();
+                    dialog.value.show = false;
                 }
-            }
-            Object.assign(dialog.value.settings, confirmDeletion)
-        }
+            };
+        };
 
-        watchEffect(()=>{
-            openai.setApiKey(inputApiKey.value)
-            openai.saveConfiguration()
-            setLang(defaultLang.value)
-        })
-        
-        watchEffect(()=>{
-            openai.setEngine(inputActualEngine.value)
-            openai.saveConfiguration()
-        })
+        const deleteContacts = (): void => {
+            dialog.value.show = true;
+            dialog.value.settings = {
+                title: text.deleteAllContacts,
+                message: text.deleteAllContacts,
+                onaccept: () => {
+                    contacts.deleteAllContacts();
+                    dialog.value.show = false;
+                }
+            };
+        };
 
-        watchEffect(()=>{
-            // set name
-            settings.userName.set(inputUserName)
-            if(inputUserName ==''){
-                settings.userName.set("Usuario")
-            }
+        const deleteAllConfiguration = (): void => {
+            dialog.value.show = true;
+            dialog.value.settings = {
+                title: text.deleteAll,
+                message: text.deleteAll,
+                onaccept: () => {
+                    chat.deleteAllConversations();
+                    contacts.deleteAllContacts();
+                    chat.saveHistory();
+                    contacts.saveList();
+                    dialog.value.show = false;
+                }
+            };
+        };
+
+        watchEffect(() => {
+            openai.setApiKey(inputApiKey.value);
+            openai.setBaseURL(inputBaseURL.value);
+            openai.setReasoning(inputShowReasoning.value);
+            openai.setEngine(inputActualEngine.value);
+            openai.saveConfiguration();
             
-            // set language
-            settings.language.set(defaultLang)
+            setLang(defaultLang.value);
+            settings.language.set(defaultLang.value);
             
-            // save all settings
-            settings.saveSettings()
-        })
+            const name = inputUserName.value.trim() || "Usuario";
+            settings.userName.set(name);
+            settings.saveSettings();
+        });
         
         return {
-            inputUserName,
-            inputApiKey,
-            inputActualEngine,
-            deleteConversations,
-            deleteContacts,
-            deleteAllConfiguration,
-            defaultLang,
-            dialog,
-            allEngines,
-            allLanguages,
-            text
-        }
+            inputUserName, inputApiKey, inputBaseURL, inputActualEngine,
+            inputShowReasoning, deleteConversations, deleteContacts,
+            deleteAllConfiguration, defaultLang, dialog, allEngines,
+            allLanguages, text
+        };
     }
-}
+});
 </script>
