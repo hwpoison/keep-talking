@@ -2,7 +2,12 @@
   <div
     ref="chatView"
     id="chat-view"
-    class="absolute flex flex-col inset-0"
+    :class="{
+      'fixed inset-x-0 top-0': backMode,
+      'absolute inset-0': !backMode
+    }"
+    class="flex flex-col"
+    :style="chatViewStyle"
     tabindex="0"
     @keyup.alt.r="retryLast()"
     @keyup.ctrl.z="undoMessage()"
@@ -20,7 +25,8 @@
             <p id="contact-name" class="inline-block text-center px-3 text-2xl">
               {{ contactInfo.name }}
             </p>
-            <p class="text-light text-md italic sm:pl-3 pl-3">
+            <p class="text-light text-md italic sm:pl-3 pl-3 flex items-center">
+              <span v-if="chatStatus == text.online" class="h-2 w-2 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
               {{ chatStatus }}
             </p>
           </div>
@@ -149,12 +155,20 @@
       v-show="contactId != null"
     >
       <input
+        type="text"
         ref="userInput"
         v-model="inputMessage"
+        name="chat-input"
+        id="chat-input"
         class="relative grow transition duration-500 border border-transparent focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-transparent py-1 pb-2 px-4 rounded-none"
         :placeholder="text.writeSomething"
-        maxlength="250"
+        maxlength="400"
+        autocomplete="off"
+        autocorrect="true"
+        autocapitalize="off"
+        spellcheck="true"
         required
+        @focus="onInputFocus"
       />
       <button class="flex-none" id="input-btn"> {{ text.send }} </button>
     </form>
@@ -162,11 +176,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, onMounted, watch, nextTick } from "vue";
+import { defineComponent, ref, reactive, onMounted, onUnmounted, watch, nextTick, computed } from "vue";
+import { useRouter } from "vue-router";
 import { saveToFile } from '../utils/file';
 import { sleep } from '../utils/sleep';
 import { isTheChatEmpty, getSystemPrompt, scrollChatToBottom } from '../utils/chatUtils';
 import { deviceType } from '../utils/detectDevice';
+import { viewport } from '../services/viewport';
+import { navigation } from "../services/navigation";
 import { openai } from "../openai/openai";
 import settings from '../services/settings';
 import contacts from "../services/contacts";
@@ -219,17 +236,39 @@ export default defineComponent({
     const messages = ref<ChatMessage[]>([]);
     const maxMessagesAdvertence = ref(false);
     const maxMessages = settings.values['maxMessages'] || 50;
+    const viewportHeight = ref(window.visualViewport?.height || window.innerHeight);
+
+    const updateViewportHeight = () => {
+      if (window.visualViewport) {
+        viewportHeight.value = window.visualViewport.height;
+      } else {
+        viewportHeight.value = window.innerHeight;
+      }
+      scrollChatToBottom(chatBox);
+    };
+
+    const chatViewStyle = computed(() => ({
+      height: `${viewportHeight.value}px`,
+    }));
+
+    const router = useRouter();
+
+    const updateTitle = () => {
+      document.title = contactInfo.name ? `${contactInfo.name} - Keep Talking` : 'Keep Talking';
+    };
 
     const loadData = () => {
       if (props.contactId === null) return;
       
       contactID.value = Number(props.contactId);
+      navigation.setActiveContact(contactID.value);
       messages.value = chat.getOrCreateChat(contactID.value) as ChatMessage[];
       
       const info = contacts.getContactInfo(contactID.value);
       if (info) Object.assign(contactInfo, info);
       
       Object.assign(userInfo, settings.values['userProfile']);
+      updateTitle();
       
       hideMenu();
       scrollChatToBottom(chatBox);
@@ -238,9 +277,28 @@ export default defineComponent({
       }
     };
 
-    watch(() => props.contactId, loadData);
+    const checkViewportAndRedirect = () => {
+      console.log(`[Chat] Checking viewport: ${viewport.type.value}, backMode: ${props.backMode}`);
+      if (props.backMode && viewport.type.value === 'desktop') {
+        console.log(`[Chat] Redirecting to home (desktop)`);
+        router.replace('/');
+      }
+    };
 
-    onMounted(loadData);
+    watch(() => props.contactId, loadData);
+    watch(viewport.type, checkViewportAndRedirect);
+
+    onMounted(() => {
+      loadData();
+      window.visualViewport?.addEventListener('resize', updateViewportHeight);
+      window.visualViewport?.addEventListener('scroll', updateViewportHeight);
+      checkViewportAndRedirect();
+    });
+
+    onUnmounted(() => {
+      window.visualViewport?.removeEventListener('resize', updateViewportHeight);
+      window.visualViewport?.removeEventListener('scroll', updateViewportHeight);
+    });
 
     const hideMenu = () => { showOptionsMenu.value = false; };
 
@@ -355,6 +413,12 @@ export default defineComponent({
       }
     };
 
+    const onInputFocus = () => {
+      if (deviceType() === 'mobile') {
+        scrollChatToBottom(chatBox);
+      }
+    };
+
     const exportChat = () => {
       const summary = messages.value.map(m => `${m.from}:${m.message}`).join("\n");
       saveToFile(summary, { fileName: `Chat_with_${contactInfo.name}_${Date.now()}.txt` });
@@ -365,7 +429,7 @@ export default defineComponent({
       chatView, chatBox, userInput, contactInfo, messages, cleanChat, 
       showOptionsMenu, hideMenu, userInfo, retryLast, undoMessage, 
       chatStatus, inputMessage, sendMessage, keepTalk, 
-      maxMessagesAdvertence, text, exportChat
+      maxMessagesAdvertence, text, exportChat, chatViewStyle, onInputFocus
     };
   },
 });

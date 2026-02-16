@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
 import Chat from '../views/Chat.vue'
 import Settings from '../views/Settings.vue'
@@ -37,12 +37,12 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/:catchAll(.*)',
     name: '404',
-    component:PageNotFound
+    component: PageNotFound
   }
 ]
 
 const router = createRouter({
-  history:createWebHistory(),
+  history: createWebHashHistory(),
   routes
 })
 

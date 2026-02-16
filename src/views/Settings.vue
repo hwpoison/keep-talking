@@ -13,11 +13,11 @@
         <label class="text-2xl font-light text-gray-500 select-none" for="apikey">{{ text.openAIKey }}:</label><br>
         <input v-model="inputApiKey" type="text" id="apikey" name="apikey" class="font-monospace p-3 w-4/5 h-12 border border-b-4"><br><br>
         
-        <label class="text-2xl font-light text-gray-500 select-none" for="baseurl">API Endpoint:</label><br>
-        <input v-model="inputBaseURL" type="text" id="baseurl" name="baseurl" class="font-monospace p-3 w-4/5 h-12 border border-b-4" placeholder="https://api.openai.com/v1"><br><br>
+        <label class="text-2xl font-light text-gray-500 select-none" for="baseurl">{{ text.apiEndpoint }}:</label><br>
+        <input v-model="inputBaseURL" type="text" id="baseurl" name="baseurl" class="font-monospace p-3 w-4/5 h-12 border border-b-4" :placeholder="text.apiBaseUrlPlaceholder"><br><br>
         
         <label class="text-2xl font-light text-gray-500 select-none" for="model">{{ text.defaultModel }}</label><br>
-        <input v-model="inputActualEngine" list="engines-list" class="font-monospace p-3 w-4/5 h-12 border border-b-4" name="model" id="model" placeholder="gpt-4o">
+        <input v-model="inputActualEngine" list="engines-list" class="font-monospace p-3 w-4/5 h-12 border border-b-4" name="model" id="model" :placeholder="text.apiModelPlaceholder">
         <datalist id="engines-list">
             <option v-for="(label, name) in allEngines" :value="label" :key="label">{{ name }}</option>
         </datalist>
@@ -36,6 +36,9 @@
         <br>
         
         <div class="flex flex-col gap-2 items-center">
+            <button class="transition duration-500 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-500 text-white font-bold py-2 px-4 border-b-4 border-cyan-700 hover:border-cyan-600 rounded w-64" @click="restoreDefaultContacts()">
+                {{ text.restoreDefaultContacts }}
+            </button> 
             <button class="transition duration-500 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-500 text-white font-bold py-2 px-4 border-b-4 border-cyan-700 hover:border-cyan-600 rounded w-64" @click="deleteConversations()">
                 {{ text.deleteAllChats }}
             </button> 
@@ -82,41 +85,74 @@ export default defineComponent({
         
         const deleteConversations = (): void => {
             dialog.value.show = true;
-            dialog.value.settings = {
+            Object.assign(dialog.value.settings, {
                 title: text.deleteAllChats,
-                message: text.deleteAllChats, // Generic message
+                message: text.areYouSure,
+                confirmationLabel: text.confirm,
+                abortLabel: text.close,
                 onaccept: () => {
                     chat.deleteAllConversations();
                     dialog.value.show = false;
+                },
+                onabort: () => {
+                    dialog.value.show = false;
                 }
-            };
+            });
         };
 
         const deleteContacts = (): void => {
             dialog.value.show = true;
-            dialog.value.settings = {
+            Object.assign(dialog.value.settings, {
                 title: text.deleteAllContacts,
-                message: text.deleteAllContacts,
+                message: text.areYouSure,
+                confirmationLabel: text.confirm,
+                abortLabel: text.close,
                 onaccept: () => {
                     contacts.deleteAllContacts();
                     dialog.value.show = false;
+                },
+                onabort: () => {
+                    dialog.value.show = false;
                 }
-            };
+            });
+        };
+
+        const restoreDefaultContacts = (): void => {
+            dialog.value.show = true;
+            Object.assign(dialog.value.settings, {
+                title: text.restoreDefaultContacts,
+                message: text.restoreDefaultContactsConfirm,
+                confirmationLabel: text.confirm,
+                abortLabel: text.close,
+                onaccept: () => {
+                    contacts.loadDemoContacts();
+                    contacts.saveList();
+                    dialog.value.show = false;
+                },
+                onabort: () => {
+                    dialog.value.show = false;
+                }
+            });
         };
 
         const deleteAllConfiguration = (): void => {
             dialog.value.show = true;
-            dialog.value.settings = {
+            Object.assign(dialog.value.settings, {
                 title: text.deleteAll,
-                message: text.deleteAll,
+                message: text.areYouSure,
+                confirmationLabel: text.confirm,
+                abortLabel: text.close,
                 onaccept: () => {
                     chat.deleteAllConversations();
                     contacts.deleteAllContacts();
                     chat.saveHistory();
                     contacts.saveList();
                     dialog.value.show = false;
+                },
+                onabort: () => {
+                    dialog.value.show = false;
                 }
-            };
+            });
         };
 
         watchEffect(() => {
@@ -129,7 +165,7 @@ export default defineComponent({
             setLang(defaultLang.value);
             settings.language.set(defaultLang.value);
             
-            const name = inputUserName.value.trim() || "Usuario";
+            const name = inputUserName.value.trim() || text.defaultUser;
             settings.userName.set(name);
             settings.saveSettings();
         });
@@ -137,8 +173,8 @@ export default defineComponent({
         return {
             inputUserName, inputApiKey, inputBaseURL, inputActualEngine,
             inputShowReasoning, deleteConversations, deleteContacts,
-            deleteAllConfiguration, defaultLang, dialog, allEngines,
-            allLanguages, text
+            restoreDefaultContacts, deleteAllConfiguration, defaultLang,
+            dialog, allEngines, allLanguages, text
         };
     }
 });

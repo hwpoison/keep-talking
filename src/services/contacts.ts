@@ -13,7 +13,12 @@ class Contacts {
   loadFromStore() {
     console.info("[+] Loading contacts");
     const storeContacts = store.read("contacts");
-    this.list.value = storeContacts || [];
+    if (storeContacts === null) {
+      this.loadDemoContacts();
+      this.saveList();
+    } else {
+      this.list.value = storeContacts;
+    }
   }
 
   loadDemoContacts() {
@@ -43,10 +48,5 @@ class Contacts {
 const contacts = new Contacts();
 
 contacts.loadFromStore();
-
-// Force demo contacts load
-if (contacts.list.value.length === 0) {
-  contacts.loadDemoContacts();
-}
 
 export default contacts;

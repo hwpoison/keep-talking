@@ -40,8 +40,9 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { navigation } from "../services/navigation";
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   showBackButton?: boolean;
 }>(), {
   showBackButton: false
@@ -50,6 +51,9 @@ withDefaults(defineProps<{
 const router = useRouter();
 
 const goBack = (): void => {
-  router.push("/");
+  if (props.showBackButton) {
+    navigation.clearActiveContact();
+  }
+  router.replace("/");
 };
 </script>

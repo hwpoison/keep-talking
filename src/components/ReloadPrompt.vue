@@ -21,11 +21,6 @@ const close = async (): Promise<void> => {
 }
 
 const updateSW = async (): Promise<void> => {
-  chat.deleteAllConversations()
-  contacts.deleteAllContacts()
-  chat.saveHistory()
-  contacts.saveList()
-
   await updateServiceWorker();
 }
 

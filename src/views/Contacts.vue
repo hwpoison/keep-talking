@@ -67,11 +67,12 @@
     </div>
 </template>
 <script lang="ts">
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 
 import chat from "../services/chat"
 import contacts from "../services/contacts"
+import { navigation } from "../services/navigation"
 
 import NavBar from "../components/NavBar.vue"
 import Logo from "../components/Logo.vue"
@@ -100,9 +101,10 @@ export default {
     setup(props, context) {
         const router = useRouter()
         const contact = ref(contacts)
-        const selectedContact = ref(null)
+        const selectedContact = navigation.activeContactId
 
         const openChat = (contactId: number): void => {
+            navigation.setActiveContact(contactId);
             if (props.emitSelected) context.emit("selected", contactId)
             else router.push("/chat/" + contactId)
         }

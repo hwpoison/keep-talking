@@ -28,6 +28,8 @@ import Contacts from "../views/Contacts.vue"
 import Chat from "../views/Chat.vue"
 import { makeResizable } from "../utils/divHorizontalResize.js"
 
+import { navigation } from "../services/navigation"
+
 export default {
     name: "DesktopLayout",
     components: {
@@ -36,21 +38,14 @@ export default {
     },
     // eslint-disable-next-line
     setup() {
-        const selectedContact = ref(null)
+        const selectedContact = navigation.activeContactId
         const contactsView = ref(null)
         const box = ref(null)
         const selected = (contactId: number): void => {
-            selectedContact.value = contactId
-            contactsView.value.selectedContact = contactId
+            navigation.setActiveContact(contactId)
         }
         onMounted(() => {
             makeResizable("resizer")
-            window.addEventListener("resize", ()=>{
-            let iWidth = window.innerWidth
-            if(iWidth < 800){
-                location.reload()
-                }
-            })
         })
 
         return {

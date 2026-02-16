@@ -14,13 +14,13 @@
   <div class="flex-1 overflow-y-scroll">
     <form class="mt-3" @submit.prevent="confirmContact()">
       <label class="text-2xl font-light select-none text-gray-500" for="contact-description"> {{ text.photo }}</label><br>
-      <input class="border py-3 border-b-4 p-3 placeholder:italic placeholder:text-gray-400 " placeholder="Link de una imagen (no obligatoria)" v-model="contactInfo.img" style="width:80%" name="contact-description"><br>
+      <input class="border py-3 border-b-4 p-3 placeholder:italic placeholder:text-gray-400 " :placeholder="text.contactImagePlaceholder" v-model="contactInfo.img" style="width:80%" name="contact-description"><br>
 
       <label class="text-2xl font-light text-gray-500  select-none" for="contact-name">{{ text.name }}</label><br>
-      <input v-model="contactInfo.name" type="text" id="contact-name" name="contact-name" class="font-monospace p-3 w-4/5 h-12 border border-b-4" placeholder="Toda personas tienen un nombre..." required><br>
+      <input v-model="contactInfo.name" type="text" id="contact-name" name="contact-name" class="font-monospace p-3 w-4/5 h-12 border border-b-4" :placeholder="text.contactNamePlaceholder" required><br>
       
       <label class="text-2xl font-light select-none text-gray-500" for="contact-description"> {{ text.description }}</label><br>
-      <textarea class="border border-b-4 p-2 " placeholder="Algo que diría para iniciar una conversación.." v-model="contactInfo.description" style="width:80%" name="contact-description">
+      <textarea class="border border-b-4 p-2 " :placeholder="text.contactDescriptionPlaceholder" v-model="contactInfo.description" style="width:80%" name="contact-description">
       </textarea>
       <br>
       <div class="mt-4">

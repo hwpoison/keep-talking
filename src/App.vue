@@ -2,9 +2,7 @@
   <ReloadPrompt />
     <div>
       <router-view v-slot="{ Component }">
-        <keep-alive>
-            <component :is="Component" />
-          </keep-alive>
+        <component :is="Component" />
       </router-view>
     </div>
 </template>
@@ -21,8 +19,11 @@ export default {
 }
 </script>
 <style>
-html {
+html, body {
   scroll-behavior: smooth;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
 }
 
 #app {
