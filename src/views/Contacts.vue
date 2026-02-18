@@ -12,18 +12,10 @@
             </template>
             <template #navbar-content>
                 <div id="options" class="flex md:gap-4 mt-5 mr-1 md:mr-3">
-                    <div
-                        id="contact-add"
-                        class="menu-btn"
-                        @click="openAddContact()"
-                    >
+                    <div id="contact-add" class="menu-btn" @click="openAddContact()">
                         <AddContactButton />
                     </div>
-                    <div
-                        id="settings-btn"
-                        class="menu-btn"
-                        @click="openSettings()"
-                    >
+                    <div id="settings-btn" class="menu-btn" @click="openSettings()">
                         <SettingsButton />
                     </div>
                     <div id="help-btn" class="menu-btn" @click="openHelp()">
@@ -33,31 +25,20 @@
             </template>
         </NavBar>
         <!-- contact list -->
-        <div
-            class="flex-1 bg-gradient-to-b overflow-y-scroll from-gray-100 pb-14 md:pb-0"
-        >
+        <div class="flex-1 bg-gradient-to-b overflow-y-scroll from-gray-100 pb-14 md:pb-0">
             <ul class="grid grid-cols-1 select-none">
                 <!-- contact -->
-                <div v-for="(contact_item, id) in contact.list" :key="id">
-                    <div
-                        class="contact overflow-hidden items-center"
-                        :class="{
-                            'contact-selected': selectedContact == contact_item.id,
-                        }"
-                        @click="openChat(contact_item.id)"
-                    >
+                <div v-for="[id, contact_item] in contact.getAll()" :key="id">
+                    <div class="contact overflow-hidden items-center" :class="{
+                        'contact-selected': selectedContact == id,
+                    }" @click="openChat(Number(id))">
                         <div id="contact-image">
-                            <img
-                                v-bind="{ src: contact_item.img, alt: contact_item.name }"
-                            />
+                            <img v-bind="{ src: contact_item.img, alt: contact_item.name }" />
                         </div>
-                        <p
-                            id="contact-name"
-                            class="overflow-hidden mb-1 w-full text-left"
-                        >
+                        <p id="contact-name" class="overflow-hidden mb-1 w-full text-left">
                             {{ contact_item.name }}<br /><span
-                                class="italic font-normal text-gray-400 text-lg truncateline"
-                                >{{ chat.getLastMessage(contact_item.id) }}
+                                class="italic font-normal text-gray-400 text-lg truncateline">{{
+                                    chat.getLastMessage(id) }}
                             </span>
                         </p>
                     </div>
@@ -142,12 +123,12 @@ export default {
     @apply bg-gray-200 hover:bg-gray-200;
 }
 
-#contact-image > img {
+#contact-image>img {
     @apply rounded-full border border-gray-200 shadow-md;
     @apply object-cover w-20 h-16 md:w-24 md:h-20;
 }
 
-.contact > p {
+.contact>p {
     @apply pt-3 pl-3;
 }
 

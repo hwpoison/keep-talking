@@ -1,6 +1,5 @@
 import { reactive } from "vue";
 import * as store from "../utils/localStorage";
-import contacts from "./contacts";
 import { ChatMessage, Contact } from "../types";
 
 const clearArray = (array: any[]) => {
@@ -15,11 +14,6 @@ const clearObject = (object: Record<string, any[]>) => {
 
 class Chat {
   messagesCollection: Record<number, ChatMessage[]> = reactive({});
-  contacts: any;
-
-  constructor(agenda: any) {
-    this.contacts = agenda;
-  }
 
   loadFromStore() {
     const storechatHistory = store.read("chatHistory");
@@ -28,16 +22,16 @@ class Chat {
     }
   }
 
-  getLastMessage(contactId: number): string {
-    const allMessages = this.messagesCollection[contactId];
+  getLastMessage(chatId: number): string {
+    const allMessages = this.messagesCollection[chatId];
     if (allMessages && allMessages.length > 0) {
       return allMessages[allMessages.length - 1].message || '';
     }
     return '';
   }
 
-  getLength(contactId: number): number {
-    return this.messagesCollection[contactId]?.length || 0;
+  getLength(chatId: number): number {
+    return this.messagesCollection[chatId]?.length || 0;
   }
 
   clearChat(chatId: number): void {
@@ -50,7 +44,7 @@ class Chat {
   deleteAllConversations(): void {
     clearObject(this.messagesCollection);
     this.saveHistory();
-    console.log("[+] All conversations deleted!");
+    console.info("All conversations deleted!");
   }
 
   getOrCreateChat(chatId: number): ChatMessage[] {
@@ -64,26 +58,18 @@ class Chat {
     store.write("chatHistory", this.messagesCollection);
   }
 
-  addMessage(chatId: number, sender: string, msgText: string): void {
-    const chat = this.getOrCreateChat(chatId);
+  addMessage(id: number, sender: string, msgText: string): void {
+    const chat = this.getOrCreateChat(id);
 
+    // push the new message
+    const chatId = chat.length;
     chat.push({
-      id: chat.length,
+      id: chatId,
       message: msgText.trim(),
       from: sender,
       type: msgText.startsWith('*') && msgText.endsWith('*') ? 'action' : 'normal'
     });
 
-    const currentContact = this.contacts.getContactInfo(chatId) as Contact;
-
-    if (currentContact) {
-      const contactList = this.contacts.getList() as Contact[];
-      const contactIndex = contactList.indexOf(currentContact);
-      if (contactIndex > -1) {
-        contactList.unshift(contactList.splice(contactIndex, 1)[0]);
-      }
-    }
-    this.contacts.saveList();
     this.saveHistory();
   }
 
@@ -96,7 +82,7 @@ class Chat {
   }
 }
 
-const chat = new Chat(contacts);
+const chat = new Chat();
 chat.loadFromStore();
 
 export default chat;

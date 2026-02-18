@@ -1,25 +1,26 @@
-<template> 
+<template>
   <ReloadPrompt />
-    <div>
-      <router-view v-slot="{ Component }">
-        <component :is="Component" />
-      </router-view>
-    </div>
+  <div>
+    <router-view v-slot="{ Component }">
+      <component :is="Component" />
+    </router-view>
+  </div>
 </template>
 <script>
 import ReloadPrompt from './components/ReloadPrompt.vue'
 
 export default {
-  components:{
+  components: {
     ReloadPrompt
   },
-  setup(){
+  setup() {
     return {}
   }
 }
 </script>
 <style>
-html, body {
+html,
+body {
   scroll-behavior: smooth;
   height: 100%;
   overflow: hidden;

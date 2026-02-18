@@ -17,11 +17,24 @@ class SettingsManager {
             return true;
         }
         console.info("[+] Loading stored settings");
-        Object.assign(this.values, storedSettings);
+
+        // preserve old settings during a version upgrade
+        const merge = (target: any, source: any) => {
+            for (const key in source) {
+                if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                    if (!target[key]) target[key] = {};
+                    merge(target[key], source[key]);
+                } else {
+                    target[key] = source[key];
+                }
+            }
+        };
+
+        merge(this.values, storedSettings);
     }
 
     saveSettings() {
-        console.log("Saving:", this.values);
+        console.log("Saving Settings:", this.values);
         store.write("settings", this.values);
     }
 
@@ -57,4 +70,3 @@ const settings = new SettingsManager();
 settings.loadSettings();
 
 export default settings;
-

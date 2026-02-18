@@ -6,5 +6,5 @@ import './index.css'
 console.info("[+] Welcome to Keep-Talking by: hwpoison :-)")
 
 createApp(App)
-			.use(router)
-			.mount('#app')
+	.use(router)
+	.mount('#app')

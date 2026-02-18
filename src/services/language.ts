@@ -5,6 +5,12 @@ type Localization = Record<string, string>;
 
 const messages: Record<string, Localization> = {
     spanish: {
+        creative: "Creativo",
+        verycreative: "Muy creativo",
+        neutral: "Neutral",
+        deterministic: "Deterministico",
+        creativity: "Creatividad",
+        deleteContact: "Eliminar contacto",
         advertiseMessage: "Advertencia",
         settings: "Configuraciones",
         startToChat: "Selecciona a alguien y comienza a conversar",
@@ -38,7 +44,7 @@ const messages: Record<string, Localization> = {
         online: "En línea",
         errorToResponse: "No disponible (Error general) ⚠️",
         writting: "Escribiendo...",
-        selectLang: "Seleccionar lenguaje",
+        selectLang: "Lenguaje",
         todayIs: "Hoy es",
         saveToFile: "Descargar",
         generalTalkAsk: "¿Sobre qué te gustaría hablar?",
@@ -72,6 +78,12 @@ const messages: Record<string, Localization> = {
         restoreDefaultContactsConfirm: "¿Deseas restaurar los contactos de demostración predeterminados? Esto no borrará tus contactos actuales."
     },
     english: {
+        creative: "Creative",
+        verycreative: "Very creative",
+        neutral: "Neutral",
+        deterministic: "Deterministic",
+        creativity: "Creativity",
+        deleteContact: "Delete contact",
         advertiseMessage: "Advertence!",
         settings: "Settings",
         startToChat: "Choice someone and start chat!",
@@ -105,7 +117,7 @@ const messages: Record<string, Localization> = {
         online: "Online",
         errorToResponse: "Offline (General Error) ⚠️",
         writting: "Typing...",
-        selectLang: "Select lang",
+        selectLang: "Language",
         todayIs: "Today is",
         saveToFile: "Save",
         generalTalkAsk: "What would you like to talk about?",

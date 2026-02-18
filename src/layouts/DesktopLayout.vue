@@ -1,22 +1,12 @@
 <template>
-    <div  id="desktop-layout">
+    <div id="desktop-layout">
         <div id="box" class="flex flex-row">
             <div class="relative h-screen" style="width: 30%">
-                <Contacts
-                    ref="contactsView"
-                    @selected="selected"
-                    :emitSelected="true"
-                />
+                <Contacts ref="contactsView" @selected="selected" :emitSelected="true" />
             </div>
-            <div
-                class="relative w-1 h-20 bg-cyan-600 resizeur"
-                id="resizer"
-            ></div>
+            <div class="relative w-1 h-20 bg-cyan-600 resizeur" id="resizer"></div>
             <div ref="box" class="relative flex-1">
-                <Chat
-                    v-bind="{ backMode: false, contactId: selectedContact }"
-                    :key="selectedContact"
-                />
+                <Chat v-bind="{ backMode: false, contactId: selectedContact }" :key="selectedContact" />
             </div>
         </div>
     </div>

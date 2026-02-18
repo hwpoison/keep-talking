@@ -1,14 +1,13 @@
 export interface ChatMessage {
     id?: number;
     role?: 'system' | 'user' | 'assistant';
-    content?: string; // used for OpenAI API
-    message?: string; // used internally in messages array
-    from?: string;    // used internally in messages array
+    message: string,
+    content?: string;
+    from?: string;
     type?: 'normal' | 'action';
 }
 
 export interface Contact {
-    id: number;
     name: string;
     img: string;
     context: string;

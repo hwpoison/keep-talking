@@ -1,8 +1,8 @@
 <script>
 export default {
-	setup(){
+	setup() {
 		window.location.href = '/'
-		return {}	
+		return {}
 	}
 }
 </script>

@@ -1,10 +1,8 @@
 import { nextTick, Ref } from "vue";
 import { getLang } from "../services/language";
 import { Contact } from "../types";
+import settings from "../services/settings"
 
-/**
- * Checks if the chat messages array is empty
- */
 export const isTheChatEmpty = (messages: Ref<any[] | null>): boolean => {
     return !messages.value || messages.value.length === 0;
 };
@@ -13,11 +11,12 @@ export const isTheChatEmpty = (messages: Ref<any[] | null>): boolean => {
  * Constructs the system prompt for the OpenAI API
  */
 export const getSystemPrompt = (contactInfo: Contact, text: Record<string, string>): string => {
-    let prompt = `You are ${contactInfo.name}. `;
+    let prompt = `You are ${contactInfo.name} and you are talking with ${settings.userName.get()}. `;
     prompt += "Strictly adhere to this persona. Never break character or mention you are an AI. ";
     prompt += "Omit or refuse to answer any questions that are inconsistent with your defined personality, knowledge, or background. ";
     prompt += "Do not impersonate other people or provide information that your character wouldn't know. ";
-    prompt += "Never use markdown styling (e.g., bold, italics, code blocks, bullet points). Use only plain text as in a conventional instant message. ";
+    prompt += "You can't send images, if the user request one, create an excuse for it. ";
+    prompt += "Don't overuse emojis. ";
     prompt += `The following is a casual private chat conversation entirely in ${getLang()}, with natural, very short, and realistic answers.\n`;
     prompt += `CONTEXT: ${contactInfo.context}\n`;
 
@@ -26,16 +25,6 @@ export const getSystemPrompt = (contactInfo: Contact, text: Record<string, strin
     } else {
         prompt += `${text.generalTalkAsk}\n`;
     }
+	console.log(prompt)
     return prompt;
 };
-
-/**
- * Scrolls the chat box to the bottom
- */
-export const scrollChatToBottom = async (chatBox: Ref<HTMLElement | null>) => {
-    await nextTick();
-    if (chatBox.value) {
-        chatBox.value.scrollTop = chatBox.value.scrollHeight;
-    }
-};
-

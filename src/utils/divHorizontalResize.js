@@ -12,7 +12,7 @@ function makeResizable(elId) {
 
     const leftSide = resizer.previousElementSibling
     const rightSide = resizer.nextElementSibling
-    fixedSize = fixedSize==null?Number(leftSide.style.width.replace(/[^\d\.\-]/g, '')):fixedSize;
+    fixedSize = fixedSize == null ? Number(leftSide.style.width.replace(/[^\d\.\-]/g, '')) : fixedSize;
     // Attach the handler
 
     const mouseMoveHandler = function (e) {
@@ -23,9 +23,9 @@ function makeResizable(elId) {
             ((leftWidth + dx) * 100) /
             resizer.parentNode.getBoundingClientRect().width
 
-        if(newLeftWidth < fixedSize){
+        if (newLeftWidth < fixedSize) {
             console.log("peligro")
-        }else{
+        } else {
             leftSide.style.width = `${newLeftWidth}%`
         }
     }

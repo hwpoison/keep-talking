@@ -1,47 +1,46 @@
 import { reactive } from "vue";
 import OpenAI from "openai";
-import * as engines from "./engines";
+import * as model from "./models";
 import { ChatMessage } from "../types";
 
-// Accessing VITE_ environment variables
 const ENV_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || "";
 const ENV_BASE_URL = import.meta.env.VITE_OPENAI_BASE_URL || "";
-const ENV_DEFAULT_MODEL = import.meta.env.VITE_OPENAI_DEFAULT_MODEL || engines.allEngines[engines.defaultEngine];
+const ENV_DEFAULT_MODEL = import.meta.env.VITE_OPENAI_DEFAULT_MODEL || model.allModels[model.defaultModel];
 
 interface OpenAIConfiguration {
     temperature: number;
-    engine: string;
+    model: string;
     showReasoning: boolean;
+    apiKey: string;
+    baseURL: string;
 }
 
 class OpenaiAPI {
-    apiKey: string;
-    baseURL: string | undefined;
-    configuration: OpenAIConfiguration;
+    configuration: OpenAIConfiguration = {
+        temperature: 0.7,
+        model: ENV_DEFAULT_MODEL,
+        showReasoning: false,
+        apiKey: ENV_API_KEY,
+        baseURL: ENV_BASE_URL
+    };
+
     private openai: OpenAI | null = null;
 
     constructor() {
-        this.apiKey = ENV_API_KEY;
-        this.baseURL = ENV_BASE_URL || undefined;
-        this.configuration = {
-            temperature: 0.7,
-            engine: ENV_DEFAULT_MODEL,
-            showReasoning: false
-        };
         this.initOpenAI();
     }
 
     private initOpenAI() {
-        const hasValidKey = this.apiKey && !this.apiKey.includes("<YOUR");
-        const hasBaseURL = !!this.baseURL;
+        const hasValidKey = this.configuration.apiKey && !this.configuration.apiKey.includes("<YOUR");
+        const hasBaseURL = !!this.configuration.baseURL;
 
         if (hasValidKey || hasBaseURL) {
             const config: any = {
-                apiKey: hasValidKey ? this.apiKey : "dummy-key",
+                apiKey: hasValidKey ? this.configuration.apiKey : "dummy-key",
                 dangerouslyAllowBrowser: true
             };
-            if (this.baseURL) {
-                config.baseURL = this.baseURL;
+            if (this.configuration.baseURL) {
+                config.baseURL = this.configuration.baseURL;
             }
             this.openai = new OpenAI(config);
         } else {
@@ -50,37 +49,41 @@ class OpenaiAPI {
     }
 
     setApiKey(key: string) {
-        this.apiKey = key;
+        this.configuration.apiKey = key;
         this.initOpenAI();
     }
 
     setBaseURL(url: string) {
-        this.baseURL = url || undefined;
+        this.configuration.baseURL = url;
         this.initOpenAI();
     }
 
-    setEngine(engine: string) {
-        this.configuration.engine = engine;
+    setModel(modelName: string) {
+        this.configuration.model = modelName;
     }
 
     setReasoning(show: boolean) {
         this.configuration.showReasoning = show;
     }
 
-    async chatGen(messages: ChatMessage[], engine: string | null = null, temperature: number | null = null) {
+    setTemperature(temperature: number) {
+        this.configuration.temperature = temperature;
+    }
+
+    async chatGen(messages: ChatMessage[], modelName: string | null = null, temperature: number | null = null) {
         if (!this.openai) {
             throw new Error("OpenAI API Key not set or invalid.");
         }
 
-        const selectedEngine = engine || this.configuration.engine;
+        const selectedModel = modelName || this.configuration.model;
         const selectedTemperature = temperature ?? this.configuration.temperature;
 
-        console.log("=>Input Prompt:", messages,
-            "\n\n=>Model:", selectedEngine,
-            "\n\n=>Temperature:", selectedTemperature);
+        console.info("Sent prompt:", messages,
+            "\n\nModel:", selectedModel,
+            "\n\nTemperature:", selectedTemperature);
 
         const requestPayload: any = {
-            model: selectedEngine,
+            model: selectedModel,
             messages: messages.map(m => ({
                 role: m.role,
                 content: m.content || m.message
@@ -99,19 +102,18 @@ class OpenaiAPI {
 
         try {
             const response = await this.openai.chat.completions.create(requestPayload);
-            console.log("=>Output", response);
+            console.info("API response:", response);
             return response;
         } catch (error: any) {
-            // Check if error is 400 and mentions reasoning_format
             const isReasoningError = error.status === 400 &&
                 (error.message?.includes("reasoning_format") ||
                     JSON.stringify(error).includes("reasoning_format"));
 
             if (isReasoningError && requestPayload.reasoning_format) {
-                console.warn("Reasoning format not supported by model, falling back to standard completion.");
+                console.warn("Reasoning format not supported, falling back.");
                 delete requestPayload.reasoning_format;
                 const retryResponse = await this.openai.chat.completions.create(requestPayload);
-                console.log("=>Output (Fallback)", retryResponse);
+                console.info("=>Output (Fallback)", retryResponse);
                 return retryResponse;
             }
 
@@ -125,11 +127,8 @@ class OpenaiAPI {
         if (storedConfig) {
             try {
                 const userConfig = JSON.parse(storedConfig);
-                if (userConfig.temperature) this.configuration.temperature = userConfig.temperature;
-                if (userConfig.engine) this.configuration.engine = userConfig.engine;
-                if (userConfig.baseURL) this.baseURL = userConfig.baseURL;
-                if (userConfig.apiKey) this.apiKey = userConfig.apiKey;
-                if (userConfig.showReasoning !== undefined) this.configuration.showReasoning = userConfig.showReasoning;
+                console.info("Loading custom AI configuration");
+                this.configuration = { ...this.configuration, ...userConfig };
             } catch (e) {
                 console.error("Failed to parse user configuration", e);
             }
@@ -138,14 +137,7 @@ class OpenaiAPI {
     }
 
     saveConfiguration() {
-        localStorage.setItem(
-            "openAIConfiguration",
-            JSON.stringify({
-                ...this.configuration,
-                baseURL: this.baseURL,
-                apiKey: this.apiKey
-            })
-        );
+        localStorage.setItem("openAIConfiguration", JSON.stringify(this.configuration));
     }
 }
 
@@ -153,5 +145,3 @@ const openai = reactive(new OpenaiAPI());
 openai.loadUserConfiguration();
 
 export { openai };
-
-
